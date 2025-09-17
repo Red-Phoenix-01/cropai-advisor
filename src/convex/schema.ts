@@ -88,6 +88,8 @@ const schema = defineSchema(
       userId: v.id("users"),
       state: v.string(),
       text: v.string(),
+      // Add optional cached user name to display in chat
+      userName: v.optional(v.string()),
     }).index("by_state", ["state"]).index("by_user", ["userId"]),
 
     connectContacts: defineTable({

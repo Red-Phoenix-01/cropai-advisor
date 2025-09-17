@@ -30,7 +30,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export default function Dashboard() {
   const { user, isAuthenticated } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(false);
-  type Language = "en" | "hi" | "ta" | "bn" | "ur" | "kn" | "te";
+  type Language = "en" | "hi" | "ta" | "bn" | "ur" | "kn" | "te" | "ml";
   const [language, setLanguage] = useState<Language>("en");
   const [isListening, setIsListening] = useState(false);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
@@ -72,7 +72,7 @@ export default function Dashboard() {
   // Language translations (ensure const assertion)
   const translations = {
     en: {
-      title: "AI Crop Recommendation System",
+      title: "KisanYatra: AI Crop Recommendation System",
       subtitle: "Get personalized crop recommendations based on your soil data",
       soilData: "Soil Data Input",
       nitrogen: "Nitrogen (N) - kg/ha",
@@ -102,7 +102,7 @@ export default function Dashboard() {
       stateRoom: "State room",
     },
     hi: {
-      title: "एआई फसल सिफारिश प्रणाली",
+      title: "KisanYatra: एआई फसल सिफारिश प्रणाली",
       subtitle: "अपने मिट्टी के डेटा के आधार पर व्यक्तिगत फसल सिफारिशें प्राप्त करें",
       soilData: "मिट्टी डेटा इनपुट",
       nitrogen: "नाइट्रोजन (N) - किग्रा/हेक्टेयर",
@@ -132,7 +132,7 @@ export default function Dashboard() {
       stateRoom: "State room",
     },
     ta: {
-      title: "ஏஐ பயிர் பரிந்துரை அமைப்பு",
+      title: "KisanYatra: ஏஐ பயிர் பரிந்துரை அமைப்பு",
       subtitle: "உங்கள் மண் தரவின் அடிப்படையில் தனிப்பயன் பரிந்துரைகள்",
       soilData: "மண் தரவு",
       nitrogen: "நைட்ரஜன் (N) - கி/ஹெ",
@@ -162,7 +162,7 @@ export default function Dashboard() {
       stateRoom: "மாநில அறை",
     },
     bn: {
-      title: "এআই ফসল সুপারিশ ব্যবস্থা",
+      title: "KisanYatra: এআই ফসল সুপারিশ ব্যবস্থা",
       subtitle: "মাটির ডেটার উপর ভিত্তি করে ব্যক্তিগত সুপারিশ",
       soilData: "মাটির তথ্য",
       nitrogen: "নাইট্রোজেন (N) - কেজি/হেঃ",
@@ -192,7 +192,7 @@ export default function Dashboard() {
       stateRoom: "রাজ্য কক্ষ",
     },
     ur: {
-      title: "اے آئی فصل کی سفارشات",
+      title: "KisanYatra: اے آئی فصل کی سفارشات",
       subtitle: "آپ کی مٹی کے ڈیٹا پر مبنی ذاتی سفارشات",
       soilData: "مٹی کے ڈیٹا",
       nitrogen: "نائٹروجن (N) - کلو/ہیکٹر",
@@ -222,7 +222,7 @@ export default function Dashboard() {
       stateRoom: "ریاست کمرہ",
     },
     kn: {
-      title: "ಎಐ ಬೆಳೆ ಶಿಫಾರಸು ವ್ಯವಸ್ಥೆ",
+      title: "KisanYatra: ಎಐ ಬೆಳೆ ಶಿಫಾರಸು ವ್ಯವಸ್ಥೆ",
       subtitle: "ನಿಮ್ಮ ಮಣ್ಣಿನ ಡೇಟಾ ಆಧಾರಿತ ವೈಯಕ್ತಿಕ ಶಿಫಾರಸುಗಳು",
       soilData: "ಮಣ್ಣಿನ ಡೇಟಾ",
       nitrogen: "ನೈಟ್ರೋಜನ್ (N) - ಕೆಜಿ/ಹೆ",
@@ -252,7 +252,7 @@ export default function Dashboard() {
       stateRoom: "ರಾಜ್ಯ ಕೊಠಡಿ",
     },
     te: {
-      title: "ఏఐ పంట సిఫార్సు వ్యవస్థ",
+      title: "KisanYatra: ఏఐ పంట సిఫార్సు వ్యవస్థ",
       subtitle: "మీ నేల డేటా ఆధారంగా వ్యక్తిగత సిఫార్సులు",
       soilData: "నేల డేటా",
       nitrogen: "నైట్రోజన్ (N) - కేజీ/హె",
@@ -281,6 +281,36 @@ export default function Dashboard() {
       save: "సేవ్",
       stateRoom: "రాష్ట్ర గది",
     },
+    ml: {
+      title: "KisanYatra: എഐ വിള ശുപാർശ സംവിധാനം",
+      subtitle: "നിങ്ങളുടെ മണ്ണ് ഡാറ്റയെ അടിസ്ഥാനമാക്കി വ്യക്തിഗത വിള ശുപാർശകൾ നേടുക",
+      soilData: "മണ്ണ് ഡാറ്റ ഇൻപുട്ട്",
+      nitrogen: "നൈട്രജൻ (N) - kg/ha",
+      phosphorus: "ഫോസ്ഫറസ് (P) - kg/ha",
+      potassium: "പൊട്ടാഷ്യം (K) - kg/ha",
+      ph: "pH നില",
+      soilMoisture: "മണ്ണിലെ ഈർപ്പം (%)",
+      waterAvailability: "ജല ലഭ്യത (%)",
+      location: "സ്ഥാനം",
+      getRecommendation: "വിള ശുപാർശ ലഭിക്കുക",
+      recommendations: "ശുപാർശ ചെയ്യുന്ന വിളകൾ",
+      marketPrices: "മാർക്കറ്റ് വിലകൾ",
+      weather: "കാലാവസ്ഥ",
+      offline: "നി́ങ്ങൾ ഓഫ്‌ലൈൻ ആണ്. കാഷെ ചെയ്ത ഡാറ്റ ഉപയോഗിക്കുന്നു.",
+      listening: "കേൾക്കുന്നു...",
+      speak: "നിങ്ങളുടെ ഇൻപുട്ട് സംസാരിക്കുക",
+      connect: "കണക്റ്റ്",
+      chat: "ചാറ്റ്",
+      contacts: "കോണ്ടാക്ട്സ്",
+      enterMessage: "സന്ദേശം ടൈപ്പ് ചെയ്യുക...",
+      shareContact: "കോണ്ടാക്ട് പങ്കിടുക",
+      name: "പേര്",
+      phone: "ഫോണ്‍",
+      note: "കുറിപ്പ് (ഐച്ഛികം)",
+      post: "പോസ്റ്റ്",
+      save: "സേവ്",
+      stateRoom: "സ്റ്റേറ്റ് റൂം",
+    },
   } as const;
 
   const t = translations[language];
@@ -304,22 +334,46 @@ export default function Dashboard() {
     };
   }, []);
 
-  // Get user location
-  const getCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setFormData(prev => ({
-            ...prev,
-            location: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`
-          }));
-          toast.success("Location detected successfully!");
-        },
-        (error) => {
-          toast.error("Unable to get location. Please enter manually.");
+  // Enhance geolocation with permission handling and high accuracy
+  const getCurrentLocation = async () => {
+    try {
+      // Try permissions API if available
+      // @ts-ignore
+      if (navigator.permissions && navigator.permissions.query) {
+        // @ts-ignore
+        const status = await navigator.permissions.query({ name: "geolocation" });
+        if (status.state === "denied") {
+          toast.error("Location permission denied. Please allow location access in browser settings.");
+          return;
         }
-      );
+      }
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            setFormData((prev) => ({
+              ...prev,
+              location: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
+            }));
+            // Set a simple weather snapshot when location is detected
+            setWeatherData({
+              temperature: Math.round(24 + (latitude % 6)),
+              humidity: 60,
+              rainfall: 10,
+              forecast: "Partly cloudy with light breeze",
+            });
+            toast.success("Location detected successfully!");
+          },
+          () => {
+            toast.error("Unable to get location. Please enter manually.");
+          },
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
+        );
+      } else {
+        toast.error("Geolocation not supported by this browser.");
+      }
+    } catch {
+      toast.error("Location access error. Please enter manually.");
     }
   };
 
@@ -430,6 +484,17 @@ export default function Dashboard() {
     );
   }
 
+  const cropImages: Record<string, string> = {
+    Wheat: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Wheat_close-up.JPG/320px-Wheat_close-up.JPG",
+    "Pulses (Lentils)": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Masoor_dal.jpg/320px-Masoor_dal.jpg",
+    Soybean: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Soybean.USDA.jpg/320px-Soybean.USDA.jpg",
+    Maize: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Corncobs.jpg/320px-Corncobs.jpg",
+    Rice: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Paddy_field_in_Vietnam.jpg/320px-Paddy_field_in_Vietnam.jpg",
+    Cotton: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/CottonPlant.JPG/320px-CottonPlant.JPG",
+    Sugarcane: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Sugarcane_in_India.jpg/320px-Sugarcane_in_India.jpg",
+    Potato: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Patates.jpg/320px-Patates.jpg",
+  };
+
   return (
     <div className={`min-h-screen bg-background transition-colors duration-300`}>
       {/* Header */}
@@ -439,7 +504,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-3">
               <Leaf className="h-8 w-8 text-green-600" />
               <div>
-                <h1 className="text-xl font-bold tracking-tight">{t.title}</h1>
+                <h1 className="text-xl font-bold tracking-tight">KisanYatra: AI Crop Recommendation System</h1>
                 <p className="text-sm text-muted-foreground">{t.subtitle}</p>
               </div>
             </div>
@@ -455,7 +520,7 @@ export default function Dashboard() {
               </Button>
               {/* Language Toggle */}
               <Select value={language} onValueChange={(val) => setLanguage(val as Language)}>
-                <SelectTrigger className="w-24">
+                <SelectTrigger className="w-28">
                   <Globe className="h-4 w-4" />
                 </SelectTrigger>
                 <SelectContent>
@@ -466,6 +531,7 @@ export default function Dashboard() {
                   <SelectItem value="ur">UR</SelectItem>
                   <SelectItem value="kn">KN</SelectItem>
                   <SelectItem value="te">TE</SelectItem>
+                  <SelectItem value="ml">ML</SelectItem>
                 </SelectContent>
               </Select>
               
@@ -720,7 +786,17 @@ export default function Dashboard() {
                     <Card key={index} className="border-2 hover:border-green-400/60 transition-colors">
                       <CardHeader className="pb-3">
                         <div className="flex items-center justify-between">
-                          <CardTitle className="text-lg">{crop.name}</CardTitle>
+                          <div className="flex items-center gap-2">
+                            {/* Crop image */}
+                            {cropImages[crop.name] && (
+                              <img
+                                src={cropImages[crop.name]}
+                                alt={crop.name}
+                                className="h-6 w-6 rounded object-cover"
+                              />
+                            )}
+                            <CardTitle className="text-lg">{crop.name}</CardTitle>
+                          </div>
                           <span className="text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-800">
                             {(crop.confidence * 100).toFixed(0)}% match
                           </span>

@@ -67,10 +67,17 @@ export const sendMessage = mutation({
     const user = await getCurrentUser(ctx);
     if (!user) throw new Error("Not authenticated");
     if (args.text.trim().length === 0) throw new Error("Empty message");
+
+    const displayName =
+      (user.name && user.name.trim()) ||
+      (user.email && user.email.split("@")[0]) ||
+      "Farmer";
+
     return await ctx.db.insert("connectMessages", {
       userId: user._id,
       state: args.state,
       text: args.text.trim(),
+      userName: displayName,
     });
   },
 });
@@ -139,6 +146,53 @@ export const seedConnectDemo = mutation({
       });
     }
     return "Seeded connect data";
+  },
+});
+
+// Add a simple season-based bot that posts into the chat
+export const sendBotSuggestion = mutation({
+  args: { state: v.string(), season: v.string() }, // season: "kharif" | "rabi" | "zaid"
+  handler: async (ctx, args) => {
+    const s = args.season.toLowerCase();
+    const state = args.state.toLowerCase();
+
+    // Very lightweight rules
+    const seasonCrops: Record<string, string[]> = {
+      kharif: ["Rice", "Maize", "Cotton", "Millets", "Soybean"],
+      rabi: ["Wheat", "Pulses (Lentils)", "Potato", "Mustard"],
+      zaid: ["Maize", "Vegetables", "Pulses (Lentils)"],
+    };
+    const picks = seasonCrops[s] ?? ["Rice", "Maize"];
+
+    const why: Record<string, string> = {
+      Rice: "High rainfall and standing water tolerance during monsoon.",
+      Maize: "Adaptable crop with good returns across states.",
+      "Pulses (Lentils)": "Low water need and nitrogen fixing improves soil.",
+      Millets: "Drought tolerant and fits low water availability.",
+      Soybean: "Nitrogen fixing legume; suited for well-drained soils.",
+      Cotton: "Warm season crop thriving with adequate K and heat.",
+      Wheat: "Prefers cool, dry Rabi with neutral pH soils.",
+      Potato: "Cooler season tuber with high K demand.",
+      Mustard: "Cool season oilseed that fits Rabi rotation.",
+      Vegetables: "Short-duration crops suitable for Zaid window.",
+    };
+
+    const top = picks.slice(0, 2);
+    const reason = top.map((c) => `${c}: ${why[c] ?? "Suitable for the season."}`).join(" | ");
+
+    const message = `Season: ${args.season}. Suggested crops for ${state}: ${top.join(", ")}. Why this crop: ${reason}`;
+
+    // Post as bot
+    // Use a fixed userName to display in UI
+    return await ctx.db.insert("connectMessages", {
+      // Use a placeholder userId since schema requires it; reuse any authenticated user via a fake context isn't allowed,
+      // so we insert with an authenticated user's id but mark userName as bot for display.
+      // We still require auth to avoid abuse; the current user triggers the bot.
+      userId: (await getCurrentUser(ctx))!._id,
+      state: args.state,
+      text: message,
+      userName: "KisanYatra Bot",
+    });
   },
 });
 

@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Leaf, Phone } from "lucide-react";
 import { useMemo, useState } from "react";
 
-type Language = "en" | "hi" | "ta" | "bn" | "ur" | "kn" | "te";
+type Language = "en" | "hi" | "ta" | "bn" | "ur" | "kn" | "te" | "ml";
 
 // Minimal language pack for Connect page (keys required by ConnectSection)
 const packs: Record<Language, {
@@ -19,6 +19,7 @@ const packs: Record<Language, {
   ur: { connect: "رابطہ", chat: "چیٹ", contacts: "رابطے", enterMessage: "پیغام لکھیں...", shareContact: "رابطہ شیئر کریں", name: "نام", phone: "فون", note: "نوٹ (اختیاری)", post: "پوسٹ", save: "محفوظ کریں", stateRoom: "ریاست کمرہ" },
   kn: { connect: "ಕನೆಕ್ಟ್", chat: "ಚಾಟ್", contacts: "ಸಂಪರ್ಕಗಳು", enterMessage: "ಸಂದೇಶವನ್ನು ಬರೆಯಿರಿ...", shareContact: "ಸಂಪರ್ಕ ಹಂಚಿಕೊಳ್ಳಿ", name: "ಹೆಸರು", phone: "ಫೋನ್", note: "ಸೂಚನೆ (ಐಚ್ಛಿಕ)", post: "ಪೋಸ್ಟ್", save: "ಉಳಿಸಿ", stateRoom: "ರಾಜ್ಯ ಕೊಠಡಿ" },
   te: { connect: "కనెక్ట్", chat: "చాట్", contacts: "సంపర్కాలు", enterMessage: "సందేశం టైప్ చేయండి...", shareContact: "సంపర్కాన్ని పంచుకోండి", name: "పేరు", phone: "ఫోన్", note: "గమనిక (ఐచ్చికం)", post: "పోస్ట్", save: "సేవ్", stateRoom: "రాష్ట్ర గది" },
+  ml: { connect: "കണക്റ്റ്", chat: "ചാറ്റ്", contacts: "കോണ്ടാക്ട്സ്", enterMessage: "സന്ദേശം ടൈപ്പ് ചെയ്യുക...", shareContact: "കോണ്ടാക്ട് പങ്കിടുക", name: "പേര്", phone: "ഫോണ്‍", note: "കുറിപ്പ് (ഐച്ഛികം)", post: "പോസ്റ്റ്", save: "സേവ്", stateRoom: "സ്റ്റേറ്റ് റൂം" },
 };
 
 export default function ConnectPage() {
@@ -49,7 +50,7 @@ export default function ConnectPage() {
       </header>
 
       <main className="container mx-auto px-4 py-8 max-w-5xl space-y-6">
-        {/* Sample contacts showcase (like the provided screenshot’s list style) */}
+        {/* Sample contacts showcase (like the provided screenshot's list style) */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">

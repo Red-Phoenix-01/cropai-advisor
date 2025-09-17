@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useMutation, useQuery } from "convex/react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -83,9 +84,11 @@ export default function ConnectSection(props: {
   const contacts = useQuery(api.connect.listContacts, { state });
   const sendMessage = useMutation(api.connect.sendMessage);
   const shareContact = useMutation(api.connect.shareContact);
+  const sendBotSuggestion = useMutation(api.connect.sendBotSuggestion);
 
   const [message, setMessage] = useState("");
   const [contact, setContact] = useState({ name: "", phone: "", note: "" });
+  const [season, setSeason] = useState<"kharif" | "rabi" | "zaid">("kharif");
 
   async function onSend() {
     try {
@@ -110,6 +113,14 @@ export default function ConnectSection(props: {
     }
   }
 
+  async function askBot() {
+    try {
+      await sendBotSuggestion({ state, season });
+    } catch {
+      toast.error("Bot unavailable");
+    }
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -126,10 +137,13 @@ export default function ConnectSection(props: {
           </TabsList>
 
           <TabsContent value="chat" className="space-y-3">
-            <div className="max-h-64 overflow-y-auto rounded-md border p-3 space-y-2">
+            <div className="max-h-64 overflow-y-auto rounded-md border p-3 space-y-3">
               {(messages ?? []).map((m) => (
                 <div key={m._id} className="text-sm">
-                  <span className="font-medium">• </span>{m.text}
+                  <div className="text-xs text-muted-foreground mb-0.5">
+                    {m.userName ?? "Farmer"}
+                  </div>
+                  <div>{m.text}</div>
                 </div>
               ))}
               {messages && messages.length === 0 && (
@@ -143,6 +157,19 @@ export default function ConnectSection(props: {
                 onChange={(e) => setMessage(e.target.value)}
               />
               <Button onClick={onSend}>{t.post}</Button>
+            </div>
+            <div className="flex items-center gap-2">
+              <Select value={season} onValueChange={(v) => setSeason(v as typeof season)}>
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="Season" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="kharif">Kharif</SelectItem>
+                  <SelectItem value="rabi">Rabi</SelectItem>
+                  <SelectItem value="zaid">Zaid</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button variant="outline" onClick={askBot}>Ask AI Bot</Button>
             </div>
           </TabsContent>
 
