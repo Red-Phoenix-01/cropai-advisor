@@ -61,7 +61,7 @@ export default function ConnectPage() {
     await sendBotSuggestion({
       state,
       season,
-      // Temporarily omit `question` until backend validator includes it to avoid ArgumentValidationError
+      question,
     });
     setQuestion("");
     setBotOpen(false);
@@ -77,7 +77,7 @@ export default function ConnectPage() {
   return (
     <div className="min-h-screen">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-4 py-4 pr-56 md:pr-72 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {/* Update: Use provided leaf logo from attachment */}
             <img
@@ -90,7 +90,9 @@ export default function ConnectPage() {
               <p className="text-sm text-muted-foreground">Chat with nearby farmers and share contacts</p>
             </div>
           </div>
-          <Button variant="outline" onClick={() => (window.location.href = "/dashboard")}>Back to Dashboard</Button>
+          <Button variant="outline" onClick={() => (window.location.href = "/dashboard")} className="mt-1 mr-28 md:mr-48">
+            Back to Dashboard
+          </Button>
         </div>
       </header>
 

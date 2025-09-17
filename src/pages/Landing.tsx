@@ -117,7 +117,7 @@ export default function Landing() {
               </div>
             </div>
             
-            <div className="mt-1 flex items-center gap-4 pr-24 md:pr-32">
+            <div className="mt-1 flex items-center gap-4 pr-32 md:pr-48">
               {isAuthenticated ? (
                 <Button onClick={() => navigate("/dashboard")}>
                   Dashboard
@@ -165,7 +165,7 @@ export default function Landing() {
                 className="text-lg px-8 py-6"
                 onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
               >
-                {isAuthenticated ? "Go to Dashboard" : "Start Free Trial"}
+                {isAuthenticated ? "Go to Dashboard" : "Start free Trial ->"}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               {!isAuthenticated && (
@@ -191,7 +191,7 @@ export default function Landing() {
                   aria-busy={googleLoading}
                 >
                   <LogIn className="mr-2 h-5 w-5" />
-                  {googleLoading ? "Signing in..." : "Continue with Google"}
+                  {googleLoading ? "Signing in..." : "-> Continue with Google"}
                 </Button>
               )}
             </div>

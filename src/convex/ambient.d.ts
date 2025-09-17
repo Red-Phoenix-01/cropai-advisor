@@ -10,4 +10,10 @@ declare module "@convex-dev/auth/providers/google" {
   export const Google: unknown;
 }
 
+// Add ambient module declaration for @auth/core Google provider (ensures TS compiles even if types are missing)
+declare module "@auth/core/providers/google" {
+  const Google: unknown;
+  export default Google;
+}
+
 export {};

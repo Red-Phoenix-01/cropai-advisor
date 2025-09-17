@@ -18,4 +18,10 @@ declare module "@convex-dev/auth/providers/google" {
   export const Google: unknown;
 }
 
+// Ensure ambient typings for @auth/core Google provider are present
+declare module "@auth/core/providers/google" {
+  const Google: unknown;
+  export default Google;
+}
+
 export {};
