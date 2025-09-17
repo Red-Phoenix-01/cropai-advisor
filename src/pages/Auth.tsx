@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/input-otp";
 
 import { useAuth } from "@/hooks/use-auth";
-import { ArrowRight, Loader2, Mail, UserX } from "lucide-react";
+import { ArrowRight, Loader2, Mail, UserX, MailCheck, TriangleAlert } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -37,14 +37,24 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       navigate(redirect);
     }
   }, [authLoading, isAuthenticated, navigate, redirectAfterAuth]);
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   const handleEmailSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
     setError(null);
+    const formData = new FormData(event.currentTarget);
+    const email = (formData.get("email") as string)?.trim();
+
+    if (!email || !emailRegex.test(email)) {
+      setError("Please enter a valid email address.");
+      setIsLoading(false);
+      return;
+    }
     try {
-      const formData = new FormData(event.currentTarget);
       await signIn("email-otp", formData);
-      setStep({ email: formData.get("email") as string });
+      setStep({ email });
       setIsLoading(false);
     } catch (error) {
       console.error("Email sign-in error:", error);
@@ -122,7 +132,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                   Enter your email to log in or sign up
                 </CardDescription>
               </CardHeader>
-              <form onSubmit={handleEmailSubmit}>
+              <form onSubmit={handleEmailSubmit} noValidate>
                 <CardContent>
                   
                   <div className="relative flex items-center gap-2">
@@ -132,9 +142,11 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                         name="email"
                         placeholder="name@example.com"
                         type="email"
+                        inputMode="email"
                         className="pl-9"
                         disabled={isLoading}
                         required
+                        aria-invalid={!!error}
                       />
                     </div>
                     <Button
@@ -142,6 +154,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                       variant="outline"
                       size="icon"
                       disabled={isLoading}
+                      aria-label="Send verification code"
+                      title="Send verification code"
                     >
                       {isLoading ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -151,7 +165,10 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                     </Button>
                   </div>
                   {error && (
-                    <p className="mt-2 text-sm text-red-500">{error}</p>
+                    <p className="mt-2 text-sm text-red-500 flex items-center gap-1">
+                      <TriangleAlert className="h-3.5 w-3.5" />
+                      {error}
+                    </p>
                   )}
                   
                   <div className="mt-4">

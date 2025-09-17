@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useMutation, useQuery } from "convex/react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 type LangPack = {
   connect: string;
@@ -85,10 +86,12 @@ export default function ConnectSection(props: {
   const sendMessage = useMutation(api.connect.sendMessage);
   const shareContact = useMutation(api.connect.shareContact);
   const sendBotSuggestion = useMutation(api.connect.sendBotSuggestion);
+  const deleteMessages = useMutation(api.connect.deleteMessages);
 
   const [message, setMessage] = useState("");
   const [contact, setContact] = useState({ name: "", phone: "", note: "" });
   const [season, setSeason] = useState<"kharif" | "rabi" | "zaid">("kharif");
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   async function onSend() {
     try {
@@ -126,7 +129,12 @@ export default function ConnectSection(props: {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>{t.connect}</span>
-          <span className="text-xs text-muted-foreground">{t.stateRoom}: {state}</span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-muted-foreground">{t.stateRoom}: {state}</span>
+            <Button variant="outline" size="sm" onClick={() => setConfirmOpen(true)}>
+              Clear Chat
+            </Button>
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -207,6 +215,31 @@ export default function ConnectSection(props: {
           </TabsContent>
         </Tabs>
       </CardContent>
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete all messages?</AlertDialogTitle>
+          </AlertDialogHeader>
+          <p className="text-sm text-muted-foreground">
+            This will remove all chat messages in the {state} room. This action cannot be undone.
+          </p>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async () => {
+                try {
+                  await deleteMessages({ state });
+                } finally {
+                  setConfirmOpen(false);
+                }
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }

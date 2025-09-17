@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ConnectSection from "./ConnectSection";
 import { useAuth } from "@/hooks/use-auth";
-import { Leaf, Phone } from "lucide-react";
+import { Leaf, Phone, AlertTriangle } from "lucide-react";
 import { useMemo, useState } from "react";
 import { api } from "@/convex/_generated/api";
 import { useMutation } from "convex/react";
@@ -72,14 +72,14 @@ export default function ConnectPage() {
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {/* Replace Leaf icon with provided SVG data URL */}
+            {/* Update: Use provided leaf logo from attachment */}
             <img
-              src={"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2316A34A'/%3E%3Cpath d='M30 70h40v5H30z' fill='%23fff'/%3E%3Cpath d='M45 25v45M35 35l20 20M65 35L45 55' stroke='%23fff' stroke-width='3' fill='none'/%3E%3C/svg%3E"}
+              src={"https://harmless-tapir-303.convex.cloud/api/storage/bedc2a1d-6891-4933-a882-24f03abde4cf"}
               alt="Connect"
-              className="h-7 w-7"
+              className="h-7 w-7 rounded"
             />
             <div>
-              <h1 className="text-xl font-bold tracking-tight">{t.connect}</h1>
+              <h1 className="text-xl font-bold tracking-tight">Connect</h1>
               <p className="text-sm text-muted-foreground">Chat with nearby farmers and share contacts</p>
             </div>
           </div>
@@ -117,34 +117,44 @@ export default function ConnectPage() {
         />
       </main>
 
-      {/* Floating AI bot popout (bottom-right) */}
+      {/* Floating AI bot popout (bottom-right) - styled */}
       <div className="fixed bottom-5 right-5 z-50">
         {!botOpen ? (
           <button
-            className="h-12 w-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg text-white flex items-center justify-center"
+            className="h-12 w-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg shadow-emerald-500/20 text-white flex items-center justify-center border border-white/20 hover:scale-105 transition"
             onClick={() => setBotOpen(true)}
             aria-label="Open AI Bot"
+            title="AI Crop Bot"
           >
             ★
           </button>
         ) : (
-          <div className="w-64 rounded-xl border bg-card shadow-xl p-3">
-            <div className="text-sm font-medium mb-2">AI Crop Bot</div>
-            <div className="mb-2">
-              <label className="text-xs text-muted-foreground">Season</label>
-              <select
-                className="mt-1 w-full rounded-md border bg-background px-2 py-1 text-sm"
-                value={season}
-                onChange={(e) => setSeason(e.target.value as typeof season)}
-              >
-                <option value="kharif">Kharif</option>
-                <option value="rabi">Rabi</option>
-                <option value="zaid">Zaid</option>
-              </select>
+          <div className="w-72 rounded-2xl border bg-background/80 backdrop-blur-md shadow-2xl p-0 overflow-hidden">
+            <div className="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-4 py-3">
+              <div className="text-sm font-semibold">AI Crop Bot</div>
+              <div className="text-[11px] opacity-90">Ask seasonal crop questions or farming tips.</div>
             </div>
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" size="sm" onClick={() => setBotOpen(false)}>Close</Button>
-              <Button size="sm" onClick={triggerBot}>Ask</Button>
+            <div className="p-3 space-y-3">
+              <div>
+                <label className="text-xs text-muted-foreground">Season</label>
+                <select
+                  className="mt-1 w-full rounded-md border bg-background px-2 py-1.5 text-sm"
+                  value={season}
+                  onChange={(e) => setSeason(e.target.value as typeof season)}
+                >
+                  <option value="kharif">Kharif</option>
+                  <option value="rabi">Rabi</option>
+                  <option value="zaid">Zaid</option>
+                </select>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" size="sm" onClick={() => setBotOpen(false)}>Close</Button>
+                <Button size="sm" onClick={triggerBot}>Ask</Button>
+              </div>
+              <div className="rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground flex items-center gap-2">
+                <AlertTriangle className="h-3.5 w-3.5" />
+                Tips are informational; verify locally before applying.
+              </div>
             </div>
           </div>
         )}
