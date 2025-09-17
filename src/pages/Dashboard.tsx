@@ -25,11 +25,13 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ConnectSection from "./ConnectSection";
 
 export default function Dashboard() {
   const { user, isAuthenticated } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(false);
-  type Language = "en" | "hi";
+  type Language = "en" | "hi" | "ta" | "bn" | "ur" | "kn" | "te";
   const [language, setLanguage] = useState<Language>("en");
   const [isListening, setIsListening] = useState(false);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
@@ -86,6 +88,17 @@ export default function Dashboard() {
       offline: "You are offline. Using cached data.",
       listening: "Listening...",
       speak: "Speak your input",
+      connect: "Connect",
+      chat: "Chat",
+      contacts: "Contacts",
+      enterMessage: "Type a message...",
+      shareContact: "Share Contact",
+      name: "Name",
+      phone: "Phone",
+      note: "Note (optional)",
+      post: "Post",
+      save: "Save",
+      stateRoom: "State room",
     },
     hi: {
       title: "एआई फसल सिफारिश प्रणाली",
@@ -105,7 +118,168 @@ export default function Dashboard() {
       offline: "आप ऑफ़लाइन हैं। कैश्ड डेटा का उपयोग कर रहे हैं।",
       listening: "सुन रहा है...",
       speak: "अपना इनपुट बोलें",
-    }
+      connect: "कनेक्ट",
+      chat: "चैट",
+      contacts: "संपर्क",
+      enterMessage: "संदेश लिखें...",
+      shareContact: "संपर्क साझा करें",
+      name: "Name",
+      phone: "Phone",
+      note: "Note (optional)",
+      post: "Post",
+      save: "Save",
+      stateRoom: "State room",
+    },
+    ta: {
+      title: "ஏஐ பயிர் பரிந்துரை அமைப்பு",
+      subtitle: "உங்கள் மண் தரவின் அடிப்படையில் தனிப்பயன் பரிந்துரைகள்",
+      soilData: "மண் தரவு",
+      nitrogen: "நைட்ரஜன் (N) - கி/ஹெ",
+      phosphorus: "பாஸ்பரஸ் (P) - கி/ஹெ",
+      potassium: "பொட்டாசியம் (K) - கி/ஹெ",
+      ph: "pH நிலை",
+      soilMoisture: "மண் ஈரப்பதம் (%)",
+      waterAvailability: "தண்ணீர் கிடைக்கும் (%)",
+      location: "இடம்",
+      getRecommendation: "பரிந்துரை பெற",
+      recommendations: "பரிந்துரைக்கப்பட்ட பயிர்கள்",
+      marketPrices: "சந்தை விலை",
+      weather: "வானிலை",
+      offline: "நீங்கள் ஆஃப்லைனில் உள்ளீர்கள்.",
+      listening: "கேட்கிறது...",
+      speak: "உங்கள் உள்ளீட்டை பேசுங்கள்",
+      connect: "இணை",
+      chat: "அரட்டை",
+      contacts: "தொடர்புகள்",
+      enterMessage: "செய்தி எழுதவும்...",
+      shareContact: "தொடர்பை பகிர்",
+      name: "பெயர்",
+      phone: "பேசி",
+      note: "குறிப்பு (விருப்பம்)",
+      post: "போஸ்ட்",
+      save: "சேமி",
+      stateRoom: "மாநில அறை",
+    },
+    bn: {
+      title: "এআই ফসল সুপারিশ ব্যবস্থা",
+      subtitle: "মাটির ডেটার উপর ভিত্তি করে ব্যক্তিগত সুপারিশ",
+      soilData: "মাটির তথ্য",
+      nitrogen: "নাইট্রোজেন (N) - কেজি/হেঃ",
+      phosphorus: "ফাস্ফরাস (P) - কেজি/হেঃ",
+      potassium: "পটাশিয়াম (K) - কেজি/হেঃ",
+      ph: "pH স্তর",
+      soilMoisture: "মাটির আর্দ্রতা (%)",
+      waterAvailability: "জলের প্রাপ্যতা (%)",
+      location: "অবস্থান",
+      getRecommendation: "ফসল সুপারিশ পান",
+      recommendations: "প্রস্তাবিত ফসল",
+      marketPrices: "বাজার মূল্য",
+      weather: "আবহাওয়া",
+      offline: "আপনি অফলাইন।",
+      listening: "শুনছে...",
+      speak: "আপনার ইনপুট বলুন",
+      connect: "সংযুক্ত হোন",
+      chat: "চ্যাট",
+      contacts: "যোগাযোগ",
+      enterMessage: "বার্তা লিখুন...",
+      shareContact: "যোগাযোগ শেয়ার করুন",
+      name: "নাম",
+      phone: "ফোন",
+      note: "নোট (ঐচ্ছিক)",
+      post: "পোস্ট",
+      save: "সংরক্ষণ",
+      stateRoom: "রাজ্য কক্ষ",
+    },
+    ur: {
+      title: "اے آئی فصل کی سفارشات",
+      subtitle: "آپ کی مٹی کے ڈیٹا پر مبنی ذاتی سفارشات",
+      soilData: "مٹی کے ڈیٹا",
+      nitrogen: "نائٹروجن (N) - کلو/ہیکٹر",
+      phosphorus: "فاسفورس (P) - کلو/ہیکٹر",
+      potassium: "پوٹاشیم (K) - کلو/ہیکٹر",
+      ph: "pH سطح",
+      soilMoisture: "مٹی کی نمی (%)",
+      waterAvailability: "پانی کی دستیابی (%)",
+      location: "مقام",
+      getRecommendation: "فصل کی سفارش حاصل کریں",
+      recommendations: "سفارش کردہ فصلیں",
+      marketPrices: "بازار قیمتیں",
+      weather: "موسم",
+      offline: "آپ آف لائن ہیں۔",
+      listening: "سن رہا ہے...",
+      speak: "اپنا ان پٹ بولیں",
+      connect: "رابطہ",
+      chat: "چیٹ",
+      contacts: "رابطے",
+      enterMessage: "پیغام لکھیں...",
+      shareContact: "رابطہ شیئر کریں",
+      name: "نام",
+      phone: "فون",
+      note: "نوٹ (اختیاری)",
+      post: "پوسٹ",
+      save: "محفوظ کریں",
+      stateRoom: "ریاست کمرہ",
+    },
+    kn: {
+      title: "ಎಐ ಬೆಳೆ ಶಿಫಾರಸು ವ್ಯವಸ್ಥೆ",
+      subtitle: "ನಿಮ್ಮ ಮಣ್ಣಿನ ಡೇಟಾ ಆಧಾರಿತ ವೈಯಕ್ತಿಕ ಶಿಫಾರಸುಗಳು",
+      soilData: "ಮಣ್ಣಿನ ಡೇಟಾ",
+      nitrogen: "ನೈಟ್ರೋಜನ್ (N) - ಕೆಜಿ/ಹೆ",
+      phosphorus: "ಫಾಸ್ಫರಸ್ (P) - ಕೆಜಿ/ಹೆ",
+      potassium: "ಪೊಟಾಷಿಯಂ (K) - ಕೆಜಿ/ಹೆ",
+      ph: "pH ಮಟ್ಟ",
+      soilMoisture: "ಮಣ್ಣಿನ ತೇವಾಂಶ (%)",
+      waterAvailability: "ನೀರು ಲಭ್ಯತೆ (%)",
+      location: "ಸ್ಥಳ",
+      getRecommendation: "ಬೆಳೆ ಶಿಫಾರಸು ಪಡೆಯಿರಿ",
+      recommendations: "ಶಿಫಾರಸು ಮಾಡಿದ ಬೆಳೆಗಳು",
+      marketPrices: "ಮಾರುಕಟ್ಟೆ ಬೆಲೆಗಳು",
+      weather: "ಹವಾಮಾನ",
+      offline: "ನೀವು ಆಫ್‌ಲೈನ್‌ ಇದ್ದೀರಿ.",
+      listening: "ಕೆಳುತ್ತಿದೆ...",
+      speak: "ನಿಮ್ಮ ಇನ್‌ಪುಟ್ ಮಾತನಾಡಿ",
+      connect: "ಕನೆಕ್ಟ್",
+      chat: "ಚಾಟ್",
+      contacts: "ಸಂಪರ್ಕಗಳು",
+      enterMessage: "ಸಂದೇಶವನ್ನು ಬರೆಯಿರಿ...",
+      shareContact: "ಸಂಪರ್ಕ ಹಂಚಿಕೊಳ್ಳಿ",
+      name: "ಹೆಸರು",
+      phone: "ಫೋನ್",
+      note: "ಸೂಚನೆ (ಐಚ್ಛಿಕ)",
+      post: "ಪೋಸ್ಟ್",
+      save: "ಉಳಿಸಿ",
+      stateRoom: "ರಾಜ್ಯ ಕೊಠಡಿ",
+    },
+    te: {
+      title: "ఏఐ పంట సిఫార్సు వ్యవస్థ",
+      subtitle: "మీ నేల డేటా ఆధారంగా వ్యక్తిగత సిఫార్సులు",
+      soilData: "నేల డేటా",
+      nitrogen: "నైట్రోజన్ (N) - కేజీ/హె",
+      phosphorus: "ఫాస్ఫరస్ (P) - కేజీ/హె",
+      potassium: "పొటాషియం (K) - కేజీ/హె",
+      ph: "pH స్థాయి",
+      soilMoisture: "నేల తేమ (%)",
+      waterAvailability: "నీటి లభ్యత (%)",
+      location: "స్థానం",
+      getRecommendation: "పంట సిఫార్సు పొందండి",
+      recommendations: "సిఫారసు చేసిన పంటలు",
+      marketPrices: "మార్కెట్ ధరలు",
+      weather: "వాతావరణం",
+      offline: "మీరు ఆఫ్‌లైన్‌లో ఉన్నారు.",
+      listening: "వింటోంది...",
+      speak: "మీ ఇన్‌పుట్ మాట్లాడండి",
+      connect: "కనెక్ట్",
+      chat: "చాట్",
+      contacts: "సంపర్కాలు",
+      enterMessage: "సందేశం టైప్ చేయండి...",
+      shareContact: "సంపర్కాన్ని పంచుకోండి",
+      name: "పేరు",
+      phone: "ఫోన్",
+      note: "గమనిక (ఐచ్చికం)",
+      post: "పోస్ట్",
+      save: "సేవ్",
+      stateRoom: "రాష్ట్ర గది",
+    },
   } as const;
 
   const t = translations[language];
@@ -271,12 +445,17 @@ export default function Dashboard() {
             <div className="flex items-center gap-2">
               {/* Language Toggle */}
               <Select value={language} onValueChange={(val) => setLanguage(val as Language)}>
-                <SelectTrigger className="w-20">
+                <SelectTrigger className="w-24">
                   <Globe className="h-4 w-4" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="en">EN</SelectItem>
                   <SelectItem value="hi">हि</SelectItem>
+                  <SelectItem value="ta">TA</SelectItem>
+                  <SelectItem value="bn">BN</SelectItem>
+                  <SelectItem value="ur">UR</SelectItem>
+                  <SelectItem value="kn">KN</SelectItem>
+                  <SelectItem value="te">TE</SelectItem>
                 </SelectContent>
               </Select>
               
@@ -568,6 +747,19 @@ export default function Dashboard() {
             </Card>
           </motion.div>
         )}
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.35 }}
+          className="mt-8"
+        >
+          <ConnectSection
+            languagePack={t}
+            locationInput={formData.location}
+            userLocation={user?.location ?? ""}
+          />
+        </motion.div>
       </div>
     </div>
   );

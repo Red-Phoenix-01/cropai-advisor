@@ -82,6 +82,21 @@ const schema = defineSchema(
       message: v.string(),
       validUntil: v.number(),
     }).index("by_location", ["location"]),
+
+    // Add connect tables for state-based farmer chat and contacts
+    connectMessages: defineTable({
+      userId: v.id("users"),
+      state: v.string(),
+      text: v.string(),
+    }).index("by_state", ["state"]).index("by_user", ["userId"]),
+
+    connectContacts: defineTable({
+      userId: v.id("users"),
+      state: v.string(),
+      name: v.string(),
+      phone: v.string(),
+      note: v.optional(v.string()),
+    }).index("by_state", ["state"]).index("by_user", ["userId"]),
   },
   {
     schemaValidation: false,

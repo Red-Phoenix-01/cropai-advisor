@@ -15,6 +15,7 @@ import type {
 } from "convex/server";
 import type * as auth_emailOtp from "../auth/emailOtp.js";
 import type * as auth from "../auth.js";
+import type * as connect from "../connect.js";
 import type * as http from "../http.js";
 import type * as market from "../market.js";
 import type * as recommendations from "../recommendations.js";
@@ -33,6 +34,7 @@ import type * as weather from "../weather.js";
 declare const fullApi: ApiFromModules<{
   "auth/emailOtp": typeof auth_emailOtp;
   auth: typeof auth;
+  connect: typeof connect;
   http: typeof http;
   market: typeof market;
   recommendations: typeof recommendations;
