@@ -17,10 +17,18 @@ import {
   Globe
 } from "lucide-react";
 import { useNavigate } from "react-router";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function Landing() {
   const { isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
+  const [demoOpen, setDemoOpen] = useState(false);
 
   const features = [
     {
@@ -136,9 +144,6 @@ export default function Landing() {
               >
                 {isAuthenticated ? "Go to Dashboard" : "Start Free Trial"}
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-                Watch Demo
               </Button>
             </div>
           </motion.div>

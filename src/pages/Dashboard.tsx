@@ -20,7 +20,8 @@ import {
   TrendingUp, 
   Wheat,
   Globe,
-  Volume2
+  Volume2,
+  DollarSign
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -512,34 +513,37 @@ export default function Dashboard() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {userRecommendations[0]?.recommendedCrops.map((crop, index) => (
-                    <Card key={index} className="border-2 hover:border-primary/50 transition-colors">
+                    <Card key={index} className="border-2 hover:border-green-400/60 transition-colors">
                       <CardHeader className="pb-3">
-                        <CardTitle className="text-lg">{crop.name}</CardTitle>
-                        <div className="flex items-center gap-2">
-                          <div className="text-sm text-muted-foreground">
-                            Confidence: {(crop.confidence * 100).toFixed(0)}%
-                          </div>
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-lg">{crop.name}</CardTitle>
+                          <span className="text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-800">
+                            {(crop.confidence * 100).toFixed(0)}% match
+                          </span>
                         </div>
                       </CardHeader>
                       <CardContent className="space-y-3">
-                        <p className="text-sm">{crop.explanation}</p>
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span>Profit Estimate:</span>
+                        <p className="text-sm text-muted-foreground">{crop.explanation}</p>
+
+                        <div className="flex items-center gap-6 text-sm">
+                          <div className="flex items-center gap-1">
                             <span className="font-medium">₹{crop.profitEstimate.toLocaleString()}</span>
                           </div>
-                          <div className="flex justify-between text-sm">
-                            <span>Water Usage:</span>
+                          <div className="flex items-center gap-1">
+                            <Droplets className="h-4 w-4 text-blue-600" />
                             <span>{crop.waterUsage}</span>
                           </div>
                         </div>
-                        <div className="pt-2 border-t">
-                          <p className="text-xs text-muted-foreground mb-1">Fertilizer Advice:</p>
-                          <p className="text-xs">{crop.fertilizerAdvice}</p>
-                        </div>
-                        <div className="pt-2 border-t">
-                          <p className="text-xs text-muted-foreground mb-1">Irrigation Advice:</p>
-                          <p className="text-xs">{crop.irrigationAdvice}</p>
+
+                        <div className="space-y-2">
+                          <div className="rounded-md bg-green-50 dark:bg-green-900/20 p-3 text-sm">
+                            <span className="font-medium">Fertilizer Advice</span>
+                            <div className="text-muted-foreground">{crop.fertilizerAdvice}</div>
+                          </div>
+                          <div className="rounded-md bg-blue-50 dark:bg-blue-900/20 p-3 text-sm">
+                            <span className="font-medium">Irrigation Advice</span>
+                            <div className="text-muted-foreground">{crop.irrigationAdvice}</div>
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
