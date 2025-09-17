@@ -155,8 +155,7 @@ export default function Landing() {
               </Button>
               <Button
                 size="lg"
-                variant="outline"
-                className="text-lg px-8 py-6 border-2 border-green-600 text-green-700 hover:bg-green-50 dark:text-green-300 dark:border-green-500 dark:hover:bg-green-900/20 rounded-full"
+                className="text-lg px-8 py-6 bg-green-700 hover:bg-green-800 text-white border-0 rounded-full"
                 onClick={() => navigate("/auth")}
                 aria-label="Sign in"
                 title="Sign in"
