@@ -307,7 +307,7 @@ export default function Dashboard() {
       ph: "pH స్థాయి",
       soilMoisture: "నేల తేమ (%)",
       waterAvailability: "నీటి లభ్యత (%)",
-      location: "స్�ానం",
+      location: "స్థానం",
       getRecommendation: "పంట సిఫార్సు పొందండి",
       recommendations: "సిఫారసు చేసిన పంటలు",
       marketPrices: "మారుకಟ్టె బెలెగళు",
@@ -565,7 +565,7 @@ export default function Dashboard() {
               </div>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3 md:gap-4">
               {/* Add top-level Connect navigation button */}
               <Button
                 variant="outline"
@@ -576,7 +576,7 @@ export default function Dashboard() {
               </Button>
               {/* Language Toggle */}
               <Select value={language} onValueChange={(val) => setLanguage(val as Language)}>
-                <SelectTrigger className="w-28">
+                <SelectTrigger className="w-28 rounded-full">
                   <Globe className="h-4 w-4" />
                 </SelectTrigger>
                 <SelectContent>

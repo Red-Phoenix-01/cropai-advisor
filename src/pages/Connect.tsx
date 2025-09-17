@@ -90,7 +90,7 @@ export default function ConnectPage() {
               <p className="text-sm text-muted-foreground">Chat with nearby farmers and share contacts</p>
             </div>
           </div>
-          <Button variant="outline" onClick={() => (window.location.href = "/dashboard")} className="mt-1 mr-28 md:mr-48">
+          <Button variant="outline" onClick={() => (window.location.href = "/dashboard")} className="mt-1 mr-32 md:mr-56">
             Back to Dashboard
           </Button>
         </div>
