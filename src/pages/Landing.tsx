@@ -24,6 +24,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export default function Landing() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -256,29 +257,36 @@ export default function Landing() {
                 <h3 className="text-xl font-semibold">Market Prices</h3>
                 <span className="text-xs text-muted-foreground">Last updated: Today</span>
               </div>
-              <div className="divide-y divide-gray-100 dark:divide-gray-700">
-                {marketPricesData.map((row) => {
-                  const up = row.change > 0;
-                  const down = row.change < 0;
-                  return (
-                    <div key={row.crop} className="flex items-center justify-between py-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg">{cropEmojis[row.crop] ?? "🌱"}</span>
-                        <span className="text-sm">{row.crop}</span>
-                        <span className="text-xs text-muted-foreground">per quintal</span>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm font-semibold">₹{row.price.toLocaleString()}</div>
-                        <div
-                          className={`text-xs ${up ? "text-green-600" : down ? "text-red-600" : "text-muted-foreground"}`}
-                        >
-                          {up ? "↑" : down ? "↓" : "—"} {Math.abs(row.change).toFixed(1)}%
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-1/3">Crop</TableHead>
+                    <TableHead className="w-1/3">Price</TableHead>
+                    <TableHead className="w-1/3">Change</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {marketPricesData.map((row) => {
+                    const up = row.change > 0;
+                    const down = row.change < 0;
+                    const changeColor = up ? "text-green-600" : down ? "text-red-600" : "text-muted-foreground";
+                    const arrow = up ? "↑" : down ? "↓" : "—";
+                    return (
+                      <TableRow key={row.crop}>
+                        <TableCell className="flex items-center gap-2">
+                          <span className="text-lg">{cropEmojis[row.crop] ?? "🌱"}</span>
+                          <span className="text-sm font-medium">{row.crop}</span>
+                        </TableCell>
+                        <TableCell className="text-sm font-semibold">₹{row.price.toLocaleString()}</TableCell>
+                        <TableCell className={`text-sm ${changeColor}`}>
+                          {arrow} {Math.abs(row.change).toFixed(1)}%
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
             </div>
           </motion.div>
         </div>
