@@ -74,7 +74,7 @@ const cropEmojis: Record<string, string> = {
 };
 
 export default function Dashboard() {
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(false);
   type Language = "en" | "hi" | "ta" | "bn" | "ur" | "kn" | "te" | "ml";
   const [language, setLanguage] = useState<Language>("en");
@@ -115,8 +115,6 @@ export default function Dashboard() {
   const userRecommendations = useQuery(api.recommendations.getRecommendations, {});
   // Fetch market prices for the sidebar (kept but we will render custom table)
   const marketPrices = useQuery(api.market.getMarketPrices, {});
-  // Profile update mutation
-  const updateProfile = useMutation(api.profile.updateProfile);
 
   // Language translations (ensure const assertion)
   const translations = {
@@ -846,73 +844,6 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
             </motion.div>
-
-            {/* Profile quick edit */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.25 }}
-            >
-              <Card>
-                <CardHeader>
-                  <CardTitle>Profile</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="grid grid-cols-1 gap-3">
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <Label>Name</Label>
-                        <Input
-                          value={user?.name ?? ""}
-                          onChange={(e) => updateProfile({ name: e.target.value })}
-                          placeholder="Your name"
-                        />
-                      </div>
-                      <div>
-                        <Label>Age</Label>
-                        <Input
-                          type="number"
-                          onChange={(e) => updateProfile({ age: Number(e.target.value) || undefined })}
-                          placeholder="Years"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <Label>Image URL</Label>
-                      <Input
-                        onBlur={(e) => updateProfile({ image: e.target.value })}
-                        placeholder="https://..."
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <Label>Farm Size (acres)</Label>
-                        <Input
-                          type="number"
-                          onBlur={(e) => updateProfile({ farmSize: Number(e.target.value) || undefined })}
-                          placeholder="e.g., 2"
-                        />
-                      </div>
-                      <div>
-                        <Label>Language</Label>
-                        <Input
-                          onBlur={(e) => updateProfile({ language: e.target.value })}
-                          placeholder="en/hi/ta/..."
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <Label>Location</Label>
-                      <Input
-                        defaultValue={user?.location ?? ""}
-                        onBlur={(e) => updateProfile({ location: e.target.value })}
-                        placeholder="City, State"
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
           </div>
         </div>
 
@@ -947,14 +878,7 @@ export default function Dashboard() {
                       <CardHeader className="pb-3">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            {/* Crop image */}
-                            {cropImages[crop.name] && (
-                              <img
-                                src={cropImages[crop.name]}
-                                alt={crop.name}
-                                className="h-6 w-6 rounded object-cover"
-                              />
-                            )}
+                            {/* Removed external crop image to prevent broken icons; keep emoji only */}
                             <CardTitle className="text-lg">
                               <span className="mr-1">{cropEmojis[crop.name] ?? "🌱"}</span>
                               {crop.name}

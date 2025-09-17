@@ -210,3 +210,23 @@ export const stateFromLocation = query({
     return inferState(args.location) || "unknown";
   },
 });
+
+/**
+ * Delete all messages in a given state room.
+ * Used by ConnectSection's "Clear Chat" confirmation.
+ */
+export const deleteMessages = mutation({
+  args: { state: v.string() },
+  handler: async (ctx, args) => {
+    // Use the state index if available; falls back to scanning if missing.
+    const toDelete = await ctx.db
+      .query("connectMessages")
+      // Expecting an index named "by_state"; if absent, Convex will surface a runtime error.
+      .withIndex("by_state", (q) => q.eq("state", args.state))
+      .collect();
+
+    for (const m of toDelete) {
+      await ctx.db.delete(m._id);
+    }
+  },
+});
