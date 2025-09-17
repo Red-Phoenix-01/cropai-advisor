@@ -150,7 +150,7 @@ export default function Landing() {
                 className="text-lg px-8 py-6"
                 onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
               >
-                {isAuthenticated ? "Go to Dashboard" : "Start free Trial ->"}
+                {isAuthenticated ? "Free Trial" : "Start free Trial ->"}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button
@@ -382,7 +382,7 @@ export default function Landing() {
               className="text-lg px-8 py-6"
               onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
             >
-              {isAuthenticated ? "Go to Dashboard" : "Start Your Free Trial"}
+              {isAuthenticated ? "Free Trial" : "Start Your Free Trial"}
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </motion.div>
