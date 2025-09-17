@@ -588,7 +588,7 @@ export default function Dashboard() {
               </Button>
               {/* Language Toggle */}
               <Select value={language} onValueChange={(val) => setLanguage(val as Language)}>
-                <SelectTrigger className="w-28 rounded-full">
+                <SelectTrigger className="w-20 sm:w-24 rounded-full px-2">
                   <Globe className="h-4 w-4" />
                 </SelectTrigger>
                 <SelectContent>
