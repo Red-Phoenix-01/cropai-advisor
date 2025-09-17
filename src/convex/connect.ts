@@ -189,11 +189,8 @@ export const sendBotSuggestion = mutation({
       .map((c) => `• ${c}: ${tips[c] ?? "Suitable for the season."}`)
       .join("\n");
 
-    // Include user's question if provided for a more conversational feel
-    const questionLine =
-      args.question && args.question.trim().length > 0
-        ? `Question: ${args.question.trim()}\n`
-        : "";
+    const trimmedQ = args.question?.trim();
+    const questionLine = trimmedQ && trimmedQ.length > 0 ? `Question: ${trimmedQ}\n` : "";
 
     const message =
       `${greeting} Farmer!\n` +

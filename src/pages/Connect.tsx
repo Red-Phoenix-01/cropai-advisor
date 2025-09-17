@@ -61,7 +61,7 @@ export default function ConnectPage() {
     await sendBotSuggestion({
       state,
       season,
-      question: question.trim() || undefined,
+      // Temporarily omit `question` until backend validator includes it to avoid ArgumentValidationError
     });
     setQuestion("");
     setBotOpen(false);
