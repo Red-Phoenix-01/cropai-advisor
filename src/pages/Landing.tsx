@@ -81,7 +81,7 @@ export default function Landing() {
                 <Wheat className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold tracking-tight">CropAI</h1>
+                <h1 className="text-xl font-bold tracking-tight">KisanYatra</h1>
                 <p className="text-xs text-muted-foreground">Smart Farming Solutions</p>
               </div>
             </div>
