@@ -6,6 +6,8 @@ import { Leaf, Phone, AlertTriangle } from "lucide-react";
 import { useMemo, useState } from "react";
 import { api } from "@/convex/_generated/api";
 import { useMutation } from "convex/react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Loader2 } from "lucide-react";
 
 type Language = "en" | "hi" | "ta" | "bn" | "ur" | "kn" | "te" | "ml";
 
@@ -34,6 +36,7 @@ export default function ConnectPage() {
   const [season, setSeason] = useState<"kharif" | "rabi" | "zaid">("kharif");
   const [botOpen, setBotOpen] = useState(false);
   const [question, setQuestion] = useState<string>("");
+  const [isAsking, setIsAsking] = useState(false);
 
   function inferStateLocal(location?: string | null): string {
     const loc = (location ?? "").toLowerCase();
@@ -57,14 +60,20 @@ export default function ConnectPage() {
 
   async function triggerBot(e?: React.FormEvent) {
     if (e) e.preventDefault();
-    const state = inferStateLocal(user?.location ?? "");
-    await sendBotSuggestion({
-      state,
-      season,
-      question,
-    });
-    setQuestion("");
-    setBotOpen(false);
+    if (isAsking) return;
+    try {
+      setIsAsking(true);
+      const state = inferStateLocal(user?.location ?? "");
+      await sendBotSuggestion({
+        state,
+        season,
+        question,
+      });
+      setQuestion("");
+      setBotOpen(false);
+    } finally {
+      setIsAsking(false);
+    }
   }
 
   const sampleContacts = [
@@ -128,58 +137,94 @@ export default function ConnectPage() {
 
       {/* Floating AI bot popout (bottom-right) - styled */}
       <div className="fixed bottom-5 right-5 z-50">
-        {!botOpen ? (
-          <button
-            className="h-12 w-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg shadow-emerald-500/20 text-white flex items-center justify-center border border-white/20 hover:scale-105 transition"
-            onClick={() => setBotOpen(true)}
-            aria-label="Open AI Bot"
-            title="AI Crop Bot"
-          >
-            ★
-          </button>
-        ) : (
-          <div className="w-72 rounded-2xl border bg-background/80 backdrop-blur-md shadow-2xl p-0 overflow-hidden">
-            <div className="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-4 py-3">
-              <div className="text-sm font-semibold">AI Crop Bot</div>
-              <div className="text-[11px] opacity-90">Ask seasonal crop questions or farming tips.</div>
-            </div>
-            <div className="p-3 space-y-3">
-              <div>
-                <label className="text-xs text-muted-foreground">Season</label>
-                <select
-                  className="mt-1 w-full rounded-md border bg-background px-2 py-1.5 text-sm"
-                  value={season}
-                  onChange={(e) => setSeason(e.target.value as typeof season)}
-                >
-                  <option value="kharif">Kharif</option>
-                  <option value="rabi">Rabi</option>
-                  <option value="zaid">Zaid</option>
-                </select>
+        <AnimatePresence>
+          {!botOpen ? (
+            <motion.button
+              key="launcher"
+              initial={{ opacity: 0, scale: 0.9, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 10 }}
+              transition={{ duration: 0.18 }}
+              className="h-12 w-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg shadow-emerald-500/20 text-white flex items-center justify-center border border-white/20 hover:scale-105 active:scale-95 transition"
+              onClick={() => setBotOpen(true)}
+              aria-label="Open AI Bot"
+              title="AI Crop Bot"
+            >
+              ★
+            </motion.button>
+          ) : (
+            <motion.div
+              key="popout"
+              initial={{ opacity: 0, scale: 0.95, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 12 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="w-[90vw] max-w-sm sm:w-80 rounded-2xl border bg-background/80 backdrop-blur-md shadow-2xl p-0 overflow-hidden"
+              role="dialog"
+              aria-modal="true"
+              aria-label="AI Crop Bot"
+            >
+              <div className="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-4 py-3">
+                <div className="text-sm font-semibold">AI Crop Bot</div>
+                <div className="text-[11px] opacity-90">Ask seasonal crop questions or farming tips.</div>
               </div>
-
-              <form onSubmit={triggerBot} className="space-y-2">
+              <div className="p-3 space-y-3">
                 <div>
-                  <label className="text-xs text-muted-foreground">Ask anything</label>
-                  <input
+                  <label className="text-xs text-muted-foreground">Season</label>
+                  <select
                     className="mt-1 w-full rounded-md border bg-background px-2 py-1.5 text-sm"
-                    placeholder="e.g., Best crops for sandy soil?"
-                    value={question}
-                    onChange={(e) => setQuestion(e.target.value)}
-                  />
+                    value={season}
+                    onChange={(e) => setSeason(e.target.value as typeof season)}
+                    disabled={isAsking}
+                  >
+                    <option value="kharif">Kharif</option>
+                    <option value="rabi">Rabi</option>
+                    <option value="zaid">Zaid</option>
+                  </select>
                 </div>
-                <div className="flex justify-end gap-2">
-                  <Button variant="outline" size="sm" type="button" onClick={() => setBotOpen(false)}>Close</Button>
-                  <Button size="sm" type="submit">Ask</Button>
-                </div>
-              </form>
 
-              <div className="rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground flex items-center gap-2">
-                <AlertTriangle className="h-3.5 w-3.5" />
-                Tips are informational; verify locally before applying.
+                <form onSubmit={triggerBot} className="space-y-2">
+                  <div>
+                    <label className="text-xs text-muted-foreground">Ask anything</label>
+                    <input
+                      className="mt-1 w-full rounded-md border bg-background px-2 py-1.5 text-sm"
+                      placeholder="e.g., Best crops for sandy soil?"
+                      value={question}
+                      onChange={(e) => setQuestion(e.target.value)}
+                      disabled={isAsking}
+                    />
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      type="button"
+                      onClick={() => setBotOpen(false)}
+                      disabled={isAsking}
+                    >
+                      Close
+                    </Button>
+                    <Button size="sm" type="submit" disabled={isAsking}>
+                      {isAsking ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Asking...
+                        </>
+                      ) : (
+                        "Ask"
+                      )}
+                    </Button>
+                  </div>
+                </form>
+
+                <div className="rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground flex items-center gap-2">
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                  Tips are informational; verify locally before applying.
+                </div>
               </div>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
