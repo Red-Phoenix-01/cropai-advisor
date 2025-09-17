@@ -16,7 +16,7 @@ import {
 
 import { useAuth } from "@/hooks/use-auth";
 import { ArrowRight, Loader2, Mail, UserX, MailCheck, TriangleAlert, LogIn } from "lucide-react";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import { useNavigate } from "react-router";
 
 interface AuthProps {
@@ -31,13 +31,6 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [googleLoading, setGoogleLoading] = useState(false);
-
-  useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      const redirect = redirectAfterAuth || "/";
-      navigate(redirect);
-    }
-  }, [authLoading, isAuthenticated, navigate, redirectAfterAuth]);
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
