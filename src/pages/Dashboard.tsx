@@ -75,7 +75,6 @@ const cropEmojis: Record<string, string> = {
 
 export default function Dashboard() {
   const { isAuthenticated } = useAuth();
-  const [isDarkMode, setIsDarkMode] = useState(false);
   type Language = "en" | "hi" | "ta" | "bn" | "ur" | "kn" | "te" | "ml";
   const [language, setLanguage] = useState<Language>("en");
   const [isListening, setIsListening] = useState(false);
@@ -362,10 +361,7 @@ export default function Dashboard() {
 
   const t = translations[language];
 
-  // Dark mode toggle
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", isDarkMode);
-  }, [isDarkMode]);
+  // Removed local dark mode toggle; using global top-right toggle app-wide
 
   // Offline detection
   useEffect(() => {
@@ -595,14 +591,7 @@ export default function Dashboard() {
                 </SelectContent>
               </Select>
               
-              {/* Dark Mode Toggle */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsDarkMode(!isDarkMode)}
-              >
-                {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              </Button>
+              {/* Dark mode toggle removed in favor of global toggle */}
             </div>
           </div>
         </div>

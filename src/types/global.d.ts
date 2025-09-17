@@ -14,4 +14,8 @@ declare module "@convex-dev/auth/providers/Google" {
   export const Google: unknown;
 }
 
+declare module "@convex-dev/auth/providers/google" {
+  export const Google: unknown;
+}
+
 export {};

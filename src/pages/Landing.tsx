@@ -27,12 +27,14 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { LogIn } from "lucide-react";
+import { toast } from "sonner";
 
 export default function Landing() {
   const { isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
   const { signIn } = useAuthActions();
   const [demoOpen, setDemoOpen] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const cropEmojis: Record<string, string> = {
     Rice: "🌾",
@@ -115,7 +117,7 @@ export default function Landing() {
               </div>
             </div>
             
-            <div className="flex items-center gap-4">
+            <div className="mt-1 flex items-center gap-4 pr-24 md:pr-32">
               {isAuthenticated ? (
                 <Button onClick={() => navigate("/dashboard")}>
                   Dashboard
@@ -170,19 +172,26 @@ export default function Landing() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="text-lg px-8 py-6"
+                  className="text-lg px-8 py-6 border-2 border-green-600 text-green-700 hover:bg-green-50 dark:text-green-300 dark:border-green-500 dark:hover:bg-green-900/20"
                   onClick={async () => {
+                    if (googleLoading) return;
+                    setGoogleLoading(true);
                     try {
                       await signIn("google");
                     } catch (e) {
                       console.error(e);
+                      toast.error("Google sign-in failed. Please try again.");
+                    } finally {
+                      setGoogleLoading(false);
                     }
                   }}
                   aria-label="Continue with Google"
                   title="Continue with Google"
+                  disabled={googleLoading}
+                  aria-busy={googleLoading}
                 >
                   <LogIn className="mr-2 h-5 w-5" />
-                  Continue with Google
+                  {googleLoading ? "Signing in..." : "Continue with Google"}
                 </Button>
               )}
             </div>

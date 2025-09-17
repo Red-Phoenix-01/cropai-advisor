@@ -65,7 +65,7 @@ function ThemeToggle() {
   return (
     <button
       aria-label="Toggle dark mode"
-      className="fixed right-4 bottom-4 z-[60] inline-flex h-10 w-10 items-center justify-center rounded-full border bg-background/80 backdrop-blur hover:bg-accent"
+      className="fixed right-4 top-4 z-[60] inline-flex h-10 w-10 items-center justify-center rounded-full border bg-background/80 backdrop-blur hover:bg-accent"
       onClick={() => setDark((d) => !d)}
     >
       {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
