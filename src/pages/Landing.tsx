@@ -170,10 +170,10 @@ export default function Landing() {
                 variant="outline"
                 className="text-lg px-8 py-6 border-2"
                 onClick={() => navigate("/auth")}
-                aria-label="Auth by vly.ai"
-                title="Auth by vly.ai"
+                aria-label="Sign in"
+                title="Sign in"
               >
-                Auth by vly.ai
+                Sign in
               </Button>
             </div>
           </motion.div>
