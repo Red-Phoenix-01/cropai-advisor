@@ -2,12 +2,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ConnectSection from "./ConnectSection";
 import { useAuth } from "@/hooks/use-auth";
-import { Leaf, Phone, AlertTriangle } from "lucide-react";
+import { Leaf, Phone, AlertTriangle, Newspaper, ExternalLink, Calendar as CalendarIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMemo, useState } from "react";
 import { api } from "@/convex/_generated/api";
 import { useMutation } from "convex/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 type Language = "en" | "hi" | "ta" | "bn" | "ur" | "kn" | "te" | "ml";
 
@@ -38,43 +41,109 @@ export default function ConnectPage() {
   const [question, setQuestion] = useState<string>("");
   const [isAsking, setIsAsking] = useState(false);
 
-  function inferStateLocal(location?: string | null): string {
-    const loc = (location ?? "").toLowerCase();
-    const pairs: Record<string, string> = {
-      chennai: "tamil nadu", coimbatore: "tamil nadu", madurai: "tamil nadu",
-      kolkata: "west bengal", howrah: "west bengal",
-      lucknow: "uttar pradesh", kanpur: "uttar pradesh",
-      patna: "bihar", bhopal: "madhya pradesh", indore: "madhya pradesh",
-      ahmedabad: "gujarat", surat: "gujarat",
-      bengaluru: "karnataka", bangalore: "karnataka", mysuru: "karnataka", mysore: "karnataka",
-      hyderabad: "andhra pradesh", vijayawada: "andhra pradesh", visakhapatnam: "andhra pradesh",
-      kochi: "kerala", thiruvananthapuram: "kerala", ernakulam: "kerala",
-      amritsar: "punjab", ludhiana: "punjab", gurugram: "haryana", faridabad: "haryana",
-      guwahati: "assam", ranchi: "jharkhand",
-    };
-    for (const [k, v] of Object.entries(pairs)) if (loc.includes(k)) return v;
-    const states = ["tamil nadu","jharkhand","kerala","punjab","west bengal","uttar pradesh","gujarat","haryana","madhya pradesh","assam","andhra pradesh","karnataka","bihar","maharashtra","rajasthan"];
-    for (const s of states) if (loc.includes(s)) return s;
-    return "tamil nadu";
-  }
-
-  async function triggerBot(e?: React.FormEvent) {
-    if (e) e.preventDefault();
-    if (isAsking) return;
-    try {
-      setIsAsking(true);
-      const state = inferStateLocal(user?.location ?? "");
-      await sendBotSuggestion({
-        state,
-        season,
-        question,
-      });
-      setQuestion("");
-      setBotOpen(false);
-    } finally {
-      setIsAsking(false);
-    }
-  }
+  // Add: curated gov schemes/news feed items (Sep–Oct 2025), easy to maintain
+  const newsItems: Array<{
+    title: string;
+    date: string; // ISO-like string for display
+    summary: string;
+    source: { name: string; url: string };
+    tags: Array<string>;
+  }> = [
+    {
+      title: "PM-Kisan Samman Nidhi — ₹6,000/year Direct Income Support",
+      date: "2025-09-05",
+      summary:
+        "Small and marginal farmers continue receiving ₹2,000 per instalment (3 per year) directly to bank accounts via DBT. Ensure eKYC and land records are updated to avoid delays.",
+      source: { name: "pmkisan.gov.in", url: "https://pmkisan.gov.in/" },
+      tags: ["Income Support", "DBT", "Financial Inclusion"],
+    },
+    {
+      title: "Pradhan Mantri Fasal Bima Yojana (PMFBY) — Crop Insurance",
+      date: "2025-09-10",
+      summary:
+        "Insurance cover against natural calamities, pests, and diseases with subsidized premiums. Claim settlement timelines tightened; use the mobile app to report losses within 72 hours.",
+      source: { name: "pmfby.gov.in", url: "https://pmfby.gov.in/" },
+      tags: ["Insurance", "Risk Management", "PMFBY"],
+    },
+    {
+      title: "Kisan Credit Card (KCC) — Affordable Credit up to ₹3 lakh",
+      date: "2025-09-12",
+      summary:
+        "Short-term credit for crops, animal husbandry, and fisheries at concessional rates. Simplified processing via banks; link with RuPay card for easy withdrawals.",
+      source: { name: "RBI — KCC", url: "https://www.rbi.org.in/" },
+      tags: ["Credit", "Low Interest", "Financial Inclusion"],
+    },
+    {
+      title: "Modified Interest Subvention Scheme — 2025–26",
+      date: "2025-09-18",
+      summary:
+        "Interest subsidy continues for eligible crop loans in FY 2025–26, effectively reducing borrowing costs for timely repayment farmers.",
+      source: {
+        name: "MoF Press",
+        url: "https://pib.gov.in/PressReleaseIframePage.aspx",
+      },
+      tags: ["Interest Subsidy", "Crop Loans"],
+    },
+    {
+      title: "Rashtriya Krishi Vikas Yojana (RKVY) — Grants & Subsidies",
+      date: "2025-09-20",
+      summary:
+        "State-driven agricultural development for irrigation, mechanization, horticulture, and value chains. Check state portals for open components and beneficiary guidelines.",
+      source: { name: "rkvy.nic.in", url: "https://rkvy.nic.in/" },
+      tags: ["Subsidy", "Infrastructure", "Mechanization"],
+    },
+    {
+      title:
+        "Viksit Krishi Sankalp Abhiyan — Scientific Advisory Village Visits",
+      date: "2025-10-20",
+      summary:
+        "Launched Oct 2025: coordinated expert visits to villages for on-field advisories, improved practices, and yield optimization. Contact local KVKs for schedules.",
+      source: {
+        name: "ICAR/KVK",
+        url: "https://icar.org.in/krishi-vigyan-kendra",
+      },
+      tags: ["Advisory", "Extension", "Yield"],
+    },
+    {
+      title:
+        "2025–26 Foodgrain Target: 362.5 Million Tonnes — Record Harvests",
+      date: "2025-09-25",
+      summary:
+        "Government targets record outputs in rice, wheat, maize, groundnut, and soybean through better inputs, MSP support, and tech adoption.",
+      source: {
+        name: "PIB Agriculture",
+        url: "https://pib.gov.in/Allrel.aspx?Ministry=Department%20of%20Agriculture%20and%20Farmers%20Welfare",
+      },
+      tags: ["Production", "MSP", "Cereals & Oilseeds"],
+    },
+    {
+      title: "Market Access & Digital Trade — e-NAM Updates",
+      date: "2025-09-28",
+      summary:
+        "More mandis integrated with e-NAM; farmers can view prices, trade, and get quality assaying support. Helps better price discovery for crops.",
+      source: { name: "e-NAM", url: "https://enam.gov.in/web/" },
+      tags: ["Markets", "Digital", "Price Discovery"],
+    },
+    {
+      title: "Tech Adoption — Drones, Soil Health, Precision Inputs",
+      date: "2025-09-30",
+      summary:
+        "Drone service subsidies and custom hiring centers expanded in states; soil health testing and precision recommendations encouraged for input savings.",
+      source: {
+        name: "DA&FW",
+        url: "https://agricoop.gov.in/en",
+      },
+      tags: ["Technology", "Drones", "Soil Health"],
+    },
+    {
+      title: "Insurance Benefits & Quick Claims — Mobile Reporting",
+      date: "2025-09-22",
+      summary:
+        "Use PMFBY app to report localized damage with geo-tagged photos within 72 hours for faster claim processing.",
+      source: { name: "PMFBY App", url: "https://pmfby.gov.in/" },
+      tags: ["Insurance", "Claims", "Mobile"],
+    },
+  ];
 
   const sampleContacts = [
     { name: "Rajesh Kumar", state: "Punjab", note: "Wheat seeds supplier", phone: "98765 43210" },
@@ -82,6 +151,42 @@ export default function ConnectPage() {
     { name: "Amit Patel", state: "Gujarat", note: "Cotton transport", phone: "99876 54321" },
     { name: "Sunita Devi", state: "Bihar", note: "Maize buyer", phone: "90909 10101" },
   ];
+
+  // Infer a state name from a free-form location string (fallback to Tamil Nadu)
+  const inferStateLocal = (loc: string): string => {
+    const L = (loc || "").toLowerCase();
+    if (L.includes("tamil")) return "tamil nadu";
+    if (L.includes("haryana")) return "haryana";
+    if (L.includes("punjab")) return "punjab";
+    if (L.includes("gujarat")) return "gujarat";
+    if (L.includes("bihar")) return "bihar";
+    if (L.includes("karnataka")) return "karnataka";
+    if (L.includes("maharashtra")) return "maharashtra";
+    if (L.includes("uttar pradesh") || L.includes("up")) return "uttar pradesh";
+    return "tamil nadu";
+  };
+
+  // Submit handler for the AI bot popout
+  async function triggerBot(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (isAsking) return;
+    try {
+      setIsAsking(true);
+      const state = inferStateLocal(user?.location ?? "");
+      await sendBotSuggestion({
+        state,
+        season,
+        question: question.trim() || undefined,
+      });
+      toast.success("Asked the AI bot. Check the chat!");
+      setQuestion("");
+      setBotOpen(false);
+    } catch {
+      toast.error("Failed to ask the AI bot. Please try again.");
+    } finally {
+      setIsAsking(false);
+    }
+  }
 
   return (
     <div className="min-h-screen">
@@ -124,6 +229,50 @@ export default function ConnectPage() {
                 <div className="text-sm">{c.phone}</div>
               </div>
             ))}
+          </CardContent>
+        </Card>
+
+        {/* News Feed: Govt schemes & updates (scrollable) */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Newspaper className="h-5 w-5 text-emerald-600" />
+              Farmer News & Schemes — Sep–Oct 2025
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <ScrollArea className="h-80">
+              <div className="divide-y">
+                {newsItems.map((item, idx) => (
+                  <div key={idx} className="p-4 flex flex-col gap-2">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="font-semibold">{item.title}</div>
+                      <div className="flex items-center text-xs text-muted-foreground gap-1">
+                        <CalendarIcon className="h-3.5 w-3.5" />
+                        <span>{new Date(item.date).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{item.summary}</p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {item.tags.map((tag) => (
+                        <Badge key={tag} variant="secondary" className="text-[11px]">
+                          {tag}
+                        </Badge>
+                      ))}
+                      <a
+                        href={item.source.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-auto inline-flex items-center gap-1 text-xs text-emerald-700 hover:underline"
+                      >
+                        Source: {item.source.name}
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
           </CardContent>
         </Card>
 
