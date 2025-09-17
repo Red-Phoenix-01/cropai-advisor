@@ -30,6 +30,23 @@ export default function Landing() {
   const navigate = useNavigate();
   const [demoOpen, setDemoOpen] = useState(false);
 
+  const cropEmojis: Record<string, string> = {
+    Rice: "🌾",
+    Wheat: "🌾",
+    Maize: "🌽",
+    Cotton: "🧵",
+    Sugarcane: "🍬",
+    Groundnut: "🥜",
+  };
+  const marketPricesData: Array<{ crop: string; price: number; change: number }> = [
+    { crop: "Rice", price: 2150, change: +5.2 },
+    { crop: "Wheat", price: 2050, change: -2.1 },
+    { crop: "Maize", price: 1850, change: 0 },
+    { crop: "Cotton", price: 5200, change: +8.5 },
+    { crop: "Sugarcane", price: 3200, change: +4.5 },
+    { crop: "Groundnut", price: 5809, change: +3.1 },
+  ];
+
   const features = [
     {
       icon: <Leaf className="h-8 w-8 text-green-600" />,
@@ -222,6 +239,45 @@ export default function Landing() {
                     </div>
                   </CardContent>
                 </Card>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Market Prices */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            viewport={{ once: true }}
+            className="mt-8"
+          >
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-2xl">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-semibold">Market Prices</h3>
+                <span className="text-xs text-muted-foreground">Last updated: Today</span>
+              </div>
+              <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                {marketPricesData.map((row) => {
+                  const up = row.change > 0;
+                  const down = row.change < 0;
+                  return (
+                    <div key={row.crop} className="flex items-center justify-between py-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">{cropEmojis[row.crop] ?? "🌱"}</span>
+                        <span className="text-sm">{row.crop}</span>
+                        <span className="text-xs text-muted-foreground">per quintal</span>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-semibold">₹{row.price.toLocaleString()}</div>
+                        <div
+                          className={`text-xs ${up ? "text-green-600" : down ? "text-red-600" : "text-muted-foreground"}`}
+                        >
+                          {up ? "↑" : down ? "↓" : "—"} {Math.abs(row.change).toFixed(1)}%
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </motion.div>
