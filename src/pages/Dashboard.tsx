@@ -218,10 +218,14 @@ export default function Dashboard() {
         location: formData.location,
       });
 
-      // Set recommendations from the created document without TS error
-      setRecommendations((result as any).recommendedCrops);
+      const recs = (result as any).recommendedCrops as typeof recommendations;
+      setRecommendations(recs);
 
-      toast.success("Crop recommendations generated!");
+      if (Array.isArray(recs) && recs.length === 0) {
+        toast.message("No exact matches found. Showing best-fit suggestions.");
+      } else {
+        toast.success("Crop recommendations generated!");
+      }
 
       // Fetch weather data (mock for demo)
       const mockWeather: WeatherData = {

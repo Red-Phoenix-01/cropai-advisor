@@ -21,6 +21,43 @@ const stateMarketPrices: Record<string, Record<string, number>> = {
 // Helper: infer state from free-text location
 function inferState(location: string): string | null {
   const loc = location.toLowerCase();
+
+  // Add simple city-to-state hints for better matching (e.g., "Chennai" -> "tamil nadu")
+  const cityStateMap: Record<string, string> = {
+    "chennai": "tamil nadu",
+    "coimbatore": "tamil nadu",
+    "madurai": "tamil nadu",
+    "kolkata": "west bengal",
+    "howrah": "west bengal",
+    "lucknow": "uttar pradesh",
+    "kanpur": "uttar pradesh",
+    "patna": "bihar",
+    "bhopal": "madhya pradesh",
+    "indore": "madhya pradesh",
+    "ahmedabad": "gujarat",
+    "surat": "gujarat",
+    "bengaluru": "karnataka",
+    "bangalore": "karnataka",
+    "mysuru": "karnataka",
+    "mysore": "karnataka",
+    "hyderabad": "andhra pradesh",
+    "vijayawada": "andhra pradesh",
+    "visakhapatnam": "andhra pradesh",
+    "kochi": "kerala",
+    "thiruvananthapuram": "kerala",
+    "ernakulam": "kerala",
+    "amritsar": "punjab",
+    "ludhiana": "punjab",
+    "gurugram": "haryana",
+    "faridabad": "haryana",
+    "guwahati": "assam",
+    "ranchi": "jharkhand",
+  };
+
+  for (const [city, state] of Object.entries(cityStateMap)) {
+    if (loc.includes(city)) return state;
+  }
+
   for (const s of Object.keys(stateMarketPrices)) {
     if (loc.includes(s)) return s;
   }
@@ -223,6 +260,110 @@ function generateCropRecommendations(
       fertilizerAdvice: "Apply 280kg N, 90kg P2O5, 90kg K2O per hectare",
       irrigationAdvice: "Regular irrigation every 7-10 days",
     });
+  }
+
+  // If no crops matched strictly, provide a best-fit fallback list so users always see recommendations.
+  if (crops.length === 0) {
+    const ph = soilData.ph;
+    const n = soilData.nitrogen;
+    const p = soilData.phosphorus;
+    const k = soilData.potassium;
+    const moisture = soilData.soilMoisture;
+    const water = soilData.waterAvailability;
+
+    const score = (within: boolean, weight: number) => (within ? weight : weight * 0.4);
+
+    // Lightweight heuristic confidences
+    const wheatConf =
+      (score(ph >= 6.0 && ph <= 7.5, 0.35) +
+        score(n >= 35, 0.35) +
+        score(moisture >= 25, 0.3));
+
+    const pulsesConf =
+      (score(ph >= 6.0 && ph <= 7.5, 0.4) +
+        score(k >= 120, 0.3) +
+        score(water >= 25, 0.3));
+
+    const soybeanConf =
+      (score(ph >= 6.0 && ph <= 7.5, 0.4) +
+        score(moisture >= 30, 0.3) +
+        score(water >= 35, 0.3));
+
+    const maizeConf =
+      (score(ph >= 5.8 && ph <= 8.6, 0.4) +
+        score(p >= 15, 0.3) +
+        score(water >= 30, 0.3));
+
+    const riceConf =
+      (score(ph >= 5.5 && ph <= 7.0, 0.35) +
+        score(water >= 60, 0.4) +
+        score(moisture >= 30, 0.25));
+
+    const cottonConf =
+      (score(k >= 150, 0.4) +
+        score(water >= 45, 0.3) +
+        score(ph >= 6.0 && ph <= 8.0, 0.3));
+
+    const clamp = (x: number) => Math.max(0.35, Math.min(0.82, x));
+
+    const fallback: Array<CropRec> = [
+      {
+        name: "Wheat",
+        confidence: clamp(wheatConf),
+        explanation: "Wheat grows well in moderate nitrogen conditions with balanced pH levels.",
+        profitEstimate: 38000,
+        waterUsage: "Medium (450-650mm)",
+        fertilizerAdvice: "Apply balanced NPK fertilizer. Use DAP during sowing.",
+        irrigationAdvice: "Water at crown root initiation and grain filling stages",
+      },
+      {
+        name: "Pulses (Lentils)",
+        confidence: clamp(pulsesConf),
+        explanation: "Pulses fix their own nitrogen and prefer neutral pH with adequate potassium.",
+        profitEstimate: withPrice("Pulses", 42000),
+        waterUsage: "Low (300-400mm)",
+        fertilizerAdvice: "Minimal nitrogen, focus on phosphorus and potassium.",
+        irrigationAdvice: "Water during pod filling stage, avoid waterlogging.",
+      },
+      {
+        name: "Soybean",
+        confidence: clamp(soybeanConf),
+        explanation: "Soybean is a nitrogen-fixing legume that thrives in well-drained soils.",
+        profitEstimate: 48000,
+        waterUsage: "Medium (450-700mm)",
+        fertilizerAdvice: "Low nitrogen, moderate phosphorus and potassium.",
+        irrigationAdvice: "Critical water need during flowering and pod filling.",
+      },
+      {
+        name: "Maize",
+        confidence: clamp(maizeConf),
+        explanation: "Maize requires good phosphorus and balanced pH.",
+        profitEstimate: withPrice("Maize", 35000),
+        waterUsage: "Medium (500-800mm)",
+        fertilizerAdvice: "Use high-nitrogen fertilizers during vegetative growth.",
+        irrigationAdvice: "Regular irrigation during silking and grain filling stages.",
+      },
+      {
+        name: "Rice",
+        confidence: clamp(riceConf),
+        explanation: "Rice thrives in nitrogen-rich, well-watered conditions with moderate soil moisture.",
+        profitEstimate: withPrice("Rice", 45000),
+        waterUsage: "High (1500-2000mm)",
+        fertilizerAdvice: "Use organic compost and bio-fertilizers. Apply NPK in 4:2:1 ratio.",
+        irrigationAdvice: "Maintain 2-5cm water level throughout growing season.",
+      },
+      {
+        name: "Cotton",
+        confidence: clamp(cottonConf),
+        explanation: "Cotton needs high potassium for fiber development and adequate water.",
+        profitEstimate: 65000,
+        waterUsage: "High (700-1300mm)",
+        fertilizerAdvice: "Focus on potassium-rich fertilizers during boll development.",
+        irrigationAdvice: "Irrigate during flowering and boll formation.",
+      },
+    ];
+
+    for (const c of fallback) crops.push(c);
   }
 
   return crops.sort((a, b) => b.confidence - a.confidence).slice(0, 6);
