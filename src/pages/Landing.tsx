@@ -25,10 +25,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { LogIn } from "lucide-react";
 
 export default function Landing() {
   const { isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
+  const { signIn } = useAuthActions();
   const [demoOpen, setDemoOpen] = useState(false);
 
   const cropEmojis: Record<string, string> = {
@@ -163,6 +166,25 @@ export default function Landing() {
                 {isAuthenticated ? "Go to Dashboard" : "Start Free Trial"}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
+              {!isAuthenticated && (
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="text-lg px-8 py-6"
+                  onClick={async () => {
+                    try {
+                      await signIn("google");
+                    } catch (e) {
+                      console.error(e);
+                    }
+                  }}
+                  aria-label="Continue with Google"
+                  title="Continue with Google"
+                >
+                  <LogIn className="mr-2 h-5 w-5" />
+                  Continue with Google
+                </Button>
+              )}
             </div>
           </motion.div>
 
