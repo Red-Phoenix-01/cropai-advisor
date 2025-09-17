@@ -3,7 +3,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/use-auth";
 import { api } from "@/convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
@@ -15,20 +14,15 @@ import {
   MapPin, 
   Mic, 
   MicOff, 
-  Moon, 
-  Sun, 
   TrendingUp, 
   Wheat,
   Globe,
-  Volume2,
-  DollarSign
+  Volume2
 } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-/* removed duplicate DollarSign import */
 
 function deriveWeatherFromLocation(loc: string): { temperature: number; humidity: number; rainfall: number; forecast: string; localTime: string } {
   // Fallback if API fails; keep lightweight variability by hash
@@ -549,18 +543,6 @@ export default function Dashboard() {
       </div>
     );
   }
-
-  const cropImages: Record<string, string> = {
-    Wheat: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Wheat_close-up.JPG/320px-Wheat_close-up.JPG",
-    "Pulses (Lentils)": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Masoor_dal.jpg/320px-Masoor_dal.jpg",
-    Soybean: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/Soybean.USDA.jpg/320px-Soybean.USDA.jpg",
-    Maize: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Corncobs.jpg/320px-Corncobs.jpg",
-    Rice: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Paddy_field_in_Vietnam.jpg/320px-Paddy_field_in_Vietnam.jpg",
-    Cotton: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/CottonPlant.JPG/320px-CottonPlant.JPG",
-    Sugarcane: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Sugarcane_in_India.jpg/320px-Sugarcane_in_India.jpg",
-    Potato: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Patates.jpg/320px-Patates.jpg",
-    Groundnut: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Peanuts_in_shell.jpg/320px-Peanuts_in_shell.jpg",
-  };
 
   return (
     <div className={`min-h-screen bg-background transition-colors duration-300`}>

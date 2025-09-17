@@ -12,8 +12,8 @@ import {
   Wheat,
   Globe
 } from "lucide-react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useNavigate } from "react-router";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 
 export default function Landing() {
   const { isAuthenticated, isLoading } = useAuth();
