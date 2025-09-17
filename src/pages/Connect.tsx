@@ -2,14 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ConnectSection from "./ConnectSection";
 import { useAuth } from "@/hooks/use-auth";
+import { Language } from "@/types";
 import { Phone, AlertTriangle, Newspaper, Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { api } from "@/convex/_generated/api";
 import { useMutation } from "convex/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-
-type Language = "en" | "hi" | "ta" | "bn" | "ur" | "kn" | "te" | "ml";
 
 // Minimal language pack for Connect page (keys required by ConnectSection)
 const packs: Record<Language, {
