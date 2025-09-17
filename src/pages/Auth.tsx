@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/input-otp";
 
 import { useAuth } from "@/hooks/use-auth";
-import { ArrowRight, Loader2, Mail, UserX, MailCheck, TriangleAlert } from "lucide-react";
+import { ArrowRight, Loader2, Mail, UserX, MailCheck, TriangleAlert, LogIn } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -178,21 +178,48 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                       </div>
                       <div className="relative flex justify-center text-xs uppercase">
                         <span className="bg-background px-2 text-muted-foreground">
-                          Or
+                          Or continue with
                         </span>
                       </div>
                     </div>
-                    
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full mt-4"
-                      onClick={handleGuestLogin}
-                      disabled={isLoading}
-                    >
-                      <UserX className="mr-2 h-4 w-4" />
-                      Continue as Guest
-                    </Button>
+
+                    <div className="mt-4 grid gap-2">
+                      <Button
+                        type="button"
+                        className="w-full"
+                        variant="outline"
+                        onClick={async () => {
+                          try {
+                            setIsLoading(true);
+                            await signIn("google");
+                          } catch (error) {
+                            setError(
+                              error instanceof Error
+                                ? error.message
+                                : "Google sign-in failed. Please try again."
+                            );
+                            setIsLoading(false);
+                          }
+                        }}
+                        disabled={isLoading}
+                        aria-label="Continue with Google"
+                        title="Continue with Google"
+                      >
+                        <LogIn className="mr-2 h-4 w-4" />
+                        Continue with Google
+                      </Button>
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full"
+                        onClick={handleGuestLogin}
+                        disabled={isLoading}
+                      >
+                        <UserX className="mr-2 h-4 w-4" />
+                        Continue as Guest
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </form>

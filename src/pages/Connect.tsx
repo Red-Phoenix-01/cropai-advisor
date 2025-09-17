@@ -33,6 +33,7 @@ export default function ConnectPage() {
   const sendBotSuggestion = useMutation(api.connect.sendBotSuggestion);
   const [season, setSeason] = useState<"kharif" | "rabi" | "zaid">("kharif");
   const [botOpen, setBotOpen] = useState(false);
+  const [question, setQuestion] = useState<string>("");
 
   function inferStateLocal(location?: string | null): string {
     const loc = (location ?? "").toLowerCase();
@@ -54,9 +55,15 @@ export default function ConnectPage() {
     return "tamil nadu";
   }
 
-  async function triggerBot() {
+  async function triggerBot(e?: React.FormEvent) {
+    if (e) e.preventDefault();
     const state = inferStateLocal(user?.location ?? "");
-    await sendBotSuggestion({ state, season });
+    await sendBotSuggestion({
+      state,
+      season,
+      question: question.trim() || undefined,
+    });
+    setQuestion("");
     setBotOpen(false);
   }
 
@@ -147,10 +154,23 @@ export default function ConnectPage() {
                   <option value="zaid">Zaid</option>
                 </select>
               </div>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" size="sm" onClick={() => setBotOpen(false)}>Close</Button>
-                <Button size="sm" onClick={triggerBot}>Ask</Button>
-              </div>
+
+              <form onSubmit={triggerBot} className="space-y-2">
+                <div>
+                  <label className="text-xs text-muted-foreground">Ask anything</label>
+                  <input
+                    className="mt-1 w-full rounded-md border bg-background px-2 py-1.5 text-sm"
+                    placeholder="e.g., Best crops for sandy soil?"
+                    value={question}
+                    onChange={(e) => setQuestion(e.target.value)}
+                  />
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" size="sm" type="button" onClick={() => setBotOpen(false)}>Close</Button>
+                  <Button size="sm" type="submit">Ask</Button>
+                </div>
+              </form>
+
               <div className="rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground flex items-center gap-2">
                 <AlertTriangle className="h-3.5 w-3.5" />
                 Tips are informational; verify locally before applying.

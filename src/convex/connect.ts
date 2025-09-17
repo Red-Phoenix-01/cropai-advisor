@@ -151,7 +151,7 @@ export const seedConnectDemo = mutation({
 
 // Add a simple season-based bot that posts into the chat
 export const sendBotSuggestion = mutation({
-  args: { state: v.string(), season: v.string() }, // season: "kharif" | "rabi" | "zaid"
+  args: { state: v.string(), season: v.string(), question: v.optional(v.string()) }, // season: "kharif" | "rabi" | "zaid"
   handler: async (ctx, args) => {
     const s = args.season.toLowerCase();
     const state = args.state.toLowerCase();
@@ -185,10 +185,19 @@ export const sendBotSuggestion = mutation({
     })();
 
     const top = picks.slice(0, 2);
-    const reasons = top.map((c) => `• ${c}: ${tips[c] ?? "Suitable for the season."}`).join("\n");
+    const reasons = top
+      .map((c) => `• ${c}: ${tips[c] ?? "Suitable for the season."}`)
+      .join("\n");
+
+    // Include user's question if provided for a more conversational feel
+    const questionLine =
+      args.question && args.question.trim().length > 0
+        ? `Question: ${args.question.trim()}\n`
+        : "";
 
     const message =
       `${greeting} Farmer!\n` +
+      questionLine +
       `Season: ${args.season.toUpperCase()} • State: ${state}\n` +
       `Suggested crops: ${top.join(", ")}\n` +
       `Why these crops:\n${reasons}\n` +

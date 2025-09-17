@@ -8,4 +8,10 @@ declare global {
   }
 }
 
+// Fix TypeScript resolution for Google provider from @convex-dev/auth.
+// Some versions don't ship type declarations for this subpath.
+declare module "@convex-dev/auth/providers/Google" {
+  export const Google: unknown;
+}
+
 export {};

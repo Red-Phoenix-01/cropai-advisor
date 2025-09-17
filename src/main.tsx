@@ -5,7 +5,7 @@ import AuthPage from "@/pages/Auth.tsx";
 import Dashboard from "@/pages/Dashboard.tsx";
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexReactClient } from "convex/react";
-import { StrictMode, useEffect } from "react";
+import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
 import "./index.css";
@@ -13,6 +13,7 @@ import Landing from "./pages/Landing.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import "./types/global.d.ts";
 import ConnectPage from "./pages/Connect.tsx";
+import { Moon, Sun } from "lucide-react";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 
@@ -39,6 +40,39 @@ function RouteSyncer() {
   return null;
 }
 
+function ThemeToggle() {
+  // Global dark mode with persistence
+  const isInitialDark =
+    typeof window !== "undefined" &&
+    (localStorage.getItem("theme") === "dark" ||
+      (!localStorage.getItem("theme") &&
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches));
+
+  const [dark, setDark] = useState<boolean>(isInitialDark);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (dark) {
+      root.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      root.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [dark]);
+
+  return (
+    <button
+      aria-label="Toggle dark mode"
+      className="fixed right-4 top-4 z-[60] inline-flex h-10 w-10 items-center justify-center rounded-full border bg-background/80 backdrop-blur hover:bg-accent"
+      onClick={() => setDark((d) => !d)}
+    >
+      {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+    </button>
+  );
+}
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <VlyToolbar />
@@ -46,6 +80,8 @@ createRoot(document.getElementById("root")!).render(
       <ConvexAuthProvider client={convex}>
         <BrowserRouter>
           <RouteSyncer />
+          {/* Global Dark Mode Toggle on every route */}
+          <ThemeToggle />
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/auth" element={<AuthPage redirectAfterAuth="/dashboard" />} />
