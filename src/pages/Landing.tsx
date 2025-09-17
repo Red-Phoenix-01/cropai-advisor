@@ -1,43 +1,380 @@
-// TODO: REPLACE THIS LANDING PAGE WITH AN ELEGANT, THEMATIC, AND WELL-DESIGNED LANDING PAGE RELEVANT TO THE PROJECT
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
-import { Loader } from "lucide-react";
+import { 
+  ArrowRight, 
+  BarChart3, 
+  CloudRain, 
+  Leaf, 
+  MapPin, 
+  Mic, 
+  Shield, 
+  Smartphone, 
+  TrendingUp, 
+  Users, 
+  Wheat,
+  Globe
+} from "lucide-react";
+import { useNavigate } from "react-router";
 
 export default function Landing() {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="min-h-screen flex flex-col"
-    >
+  const { isAuthenticated, isLoading } = useAuth();
+  const navigate = useNavigate();
 
-      
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center">
-        <div className="max-w-5xl mx-auto relative px-4">
-        {/* TODO: landing page goes here; replace with the landing page */}
-        <div className="flex justify-center">
-          <img
-            src="./logo.svg"
-            alt="Lock Icon"
-            width={64}
-            height={64}
-            className="rounded-lg mb-8 mt-24"
-          />
-        </div>
-        <div className="flex items-center justify-center">
-          <Loader className="h-8 w-8 animate-spin mr-4" />
-          <a
-            href="https://vly.ai"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary underline hover:text-primary/80 transition-colors"
-          >
-            vly.ai
-          </a>&nbsp; is generating your project...
-        </div>
-        </div>
+  const features = [
+    {
+      icon: <Leaf className="h-8 w-8 text-green-600" />,
+      title: "AI-Powered Recommendations",
+      description: "Get personalized crop suggestions based on your soil data and local conditions"
+    },
+    {
+      icon: <CloudRain className="h-8 w-8 text-blue-600" />,
+      title: "Weather Integration",
+      description: "Real-time weather data and alerts to help you make informed decisions"
+    },
+    {
+      icon: <TrendingUp className="h-8 w-8 text-purple-600" />,
+      title: "Market Prices",
+      description: "Stay updated with current mandi prices and market trends"
+    },
+    {
+      icon: <Mic className="h-8 w-8 text-orange-600" />,
+      title: "Voice Support",
+      description: "Speak your inputs in Hindi or English with voice recognition"
+    },
+    {
+      icon: <Smartphone className="h-8 w-8 text-indigo-600" />,
+      title: "Mobile First",
+      description: "Works offline as a Progressive Web App on any device"
+    },
+    {
+      icon: <Globe className="h-8 w-8 text-teal-600" />,
+      title: "Multilingual",
+      description: "Available in English and Hindi for better accessibility"
+    }
+  ];
+
+  const stats = [
+    { number: "10,000+", label: "Farmers Helped" },
+    { number: "25+", label: "Crop Types" },
+    { number: "95%", label: "Accuracy Rate" },
+    { number: "24/7", label: "Support" }
+  ];
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
       </div>
-    </motion.div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      {/* Navigation */}
+      <nav className="border-b bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-green-600 rounded-lg">
+                <Wheat className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold tracking-tight">CropAI</h1>
+                <p className="text-xs text-muted-foreground">Smart Farming Solutions</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              {isAuthenticated ? (
+                <Button onClick={() => navigate("/dashboard")}>
+                  Dashboard
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              ) : (
+                <Button onClick={() => navigate("/auth")}>
+                  Get Started
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="py-20 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+            <div className="inline-flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 px-4 py-2 rounded-full text-sm font-medium mb-6">
+              <Leaf className="h-4 w-4" />
+              AI-Powered Agriculture
+            </div>
+            
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Smart Crop
+              <br />
+              Recommendations
+            </h1>
+            
+            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+              Maximize your harvest with AI-driven insights. Get personalized crop recommendations, 
+              weather alerts, and market prices - all in your local language.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button 
+                size="lg" 
+                className="text-lg px-8 py-6"
+                onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
+              >
+                {isAuthenticated ? "Go to Dashboard" : "Start Free Trial"}
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+              <Button variant="outline" size="lg" className="text-lg px-8 py-6">
+                Watch Demo
+              </Button>
+            </div>
+          </motion.div>
+
+          {/* Hero Image/Animation */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, delay: 0.2 }}
+            className="relative"
+          >
+            <div className="bg-gradient-to-r from-green-400 to-blue-500 rounded-3xl p-8 shadow-2xl">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="text-center">
+                    <div className="mx-auto w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-2">
+                      <Leaf className="h-6 w-6 text-green-600" />
+                    </div>
+                    <CardTitle className="text-lg">Soil Analysis</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span>Nitrogen:</span>
+                        <span className="font-medium">45 kg/ha</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>pH Level:</span>
+                        <span className="font-medium">6.8</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Moisture:</span>
+                        <span className="font-medium">65%</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="text-center">
+                    <div className="mx-auto w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-2">
+                      <CloudRain className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <CardTitle className="text-lg">Weather</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span>Temperature:</span>
+                        <span className="font-medium">28°C</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Humidity:</span>
+                        <span className="font-medium">72%</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Rainfall:</span>
+                        <span className="font-medium">15mm</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="text-center">
+                    <div className="mx-auto w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mb-2">
+                      <TrendingUp className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <CardTitle className="text-lg">Recommendation</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-600 mb-1">Rice</div>
+                      <div className="text-sm text-muted-foreground mb-2">85% Match</div>
+                      <div className="text-xs">Profit: ₹45,000/ha</div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 bg-white dark:bg-gray-800">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-8"
+          >
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="text-3xl md:text-4xl font-bold text-green-600 mb-2">
+                  {stat.number}
+                </div>
+                <div className="text-muted-foreground">{stat.label}</div>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
+              Everything You Need for
+              <span className="text-green-600"> Smart Farming</span>
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Our comprehensive platform combines AI, weather data, and market insights 
+              to help you make the best farming decisions.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <Card className="h-full hover:shadow-lg transition-shadow duration-300 border-0 shadow-md">
+                  <CardHeader>
+                    <div className="mb-4">{feature.icon}</div>
+                    <CardTitle className="text-xl">{feature.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-base leading-relaxed">
+                      {feature.description}
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 px-4 bg-gradient-to-r from-green-600 to-blue-600">
+        <div className="container mx-auto max-w-4xl text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Ready to Transform Your Farming?
+            </h2>
+            <p className="text-xl text-green-100 mb-8 max-w-2xl mx-auto">
+              Join thousands of farmers who are already using AI to increase their yields 
+              and profits. Get started today - it's free!
+            </p>
+            <Button 
+              size="lg" 
+              variant="secondary"
+              className="text-lg px-8 py-6"
+              onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
+            >
+              {isAuthenticated ? "Go to Dashboard" : "Start Your Free Trial"}
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-12 px-4 bg-gray-900 text-white">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-green-600 rounded-lg">
+                  <Wheat className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold">CropAI</h3>
+                  <p className="text-sm text-gray-400">Smart Farming Solutions</p>
+                </div>
+              </div>
+              <p className="text-gray-400">
+                Empowering farmers with AI-driven insights for better crop decisions.
+              </p>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-4">Features</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li>Crop Recommendations</li>
+                <li>Weather Alerts</li>
+                <li>Market Prices</li>
+                <li>Voice Support</li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-4">Support</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li>Help Center</li>
+                <li>Contact Us</li>
+                <li>Training Videos</li>
+                <li>Community</li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-4">Company</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li>About Us</li>
+                <li>Privacy Policy</li>
+                <li>Terms of Service</li>
+                <li>Careers</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+            <p>&copy; 2024 CropAI. All rights reserved. Built for Smart India Hackathon 2025.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
   );
 }

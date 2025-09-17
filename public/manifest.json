@@ -1,0 +1,27 @@
+{
+  "name": "CropAI - Smart Crop Recommendations",
+  "short_name": "CropAI",
+  "description": "AI-powered crop recommendation system for farmers",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#16a34a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["agriculture", "productivity", "utilities"],
+  "lang": "en",
+  "dir": "ltr"
+}

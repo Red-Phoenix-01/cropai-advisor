@@ -30,14 +30,58 @@ const schema = defineSchema(
       isAnonymous: v.optional(v.boolean()), // is the user anonymous. do not remove
 
       role: v.optional(roleValidator), // role of the user. do not remove
+      location: v.optional(v.string()), // farmer location
+      farmSize: v.optional(v.number()), // farm size in acres
+      language: v.optional(v.string()), // preferred language
     }).index("email", ["email"]), // index for the email. do not remove or modify
 
-    // add other tables here
+    // Crop recommendations table
+    recommendations: defineTable({
+      userId: v.id("users"),
+      nitrogen: v.number(),
+      phosphorus: v.number(),
+      potassium: v.number(),
+      ph: v.number(),
+      soilMoisture: v.number(),
+      waterAvailability: v.number(),
+      location: v.string(),
+      latitude: v.optional(v.number()),
+      longitude: v.optional(v.number()),
+      recommendedCrops: v.array(v.object({
+        name: v.string(),
+        confidence: v.number(),
+        explanation: v.string(),
+        profitEstimate: v.number(),
+        waterUsage: v.string(),
+        fertilizerAdvice: v.string(),
+        irrigationAdvice: v.string(),
+      })),
+      weatherData: v.optional(v.object({
+        temperature: v.number(),
+        humidity: v.number(),
+        rainfall: v.number(),
+        forecast: v.string(),
+      })),
+    }).index("by_user", ["userId"]),
 
-    // tableName: defineTable({
-    //   ...
-    //   // table fields
-    // }).index("by_field", ["field"])
+    // Market prices table
+    marketPrices: defineTable({
+      crop: v.string(),
+      price: v.number(),
+      unit: v.string(),
+      market: v.string(),
+      date: v.string(),
+      trend: v.string(), // "up", "down", "stable"
+    }).index("by_crop", ["crop"]),
+
+    // Weather alerts table
+    weatherAlerts: defineTable({
+      location: v.string(),
+      alertType: v.string(), // "drought", "flood", "frost", etc.
+      severity: v.string(), // "low", "medium", "high"
+      message: v.string(),
+      validUntil: v.number(),
+    }).index("by_location", ["location"]),
   },
   {
     schemaValidation: false,
