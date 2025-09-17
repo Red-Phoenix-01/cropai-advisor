@@ -1,4 +1,51 @@
-## Overview
+# KisanYatra - AI-Based Crop Recommendation PWA for Farmers
+
+A comprehensive Progressive Web App (PWA) that provides AI-powered crop recommendations for farmers based on soil analysis, weather conditions, and market trends. Built for Smart India Hackathon 2025.
+
+## Features
+
+### 🌱 Core Functionality
+- **Intelligent Crop Recommendations**: AI-powered suggestions based on soil parameters (N-P-K, pH, moisture)
+- **Location-Based Analysis**: Auto-detect location for weather and regional recommendations
+- **Multilingual Support**: Full English and Hindi language support
+- **Voice Input/Output**: Speech recognition and text-to-speech capabilities
+- **Offline Functionality**: Works offline with cached recommendations
+
+### 🌍 Smart Features
+- **Weather Integration**: Real-time weather data and alerts
+- **Market Prices**: Current mandi prices and trends
+- **Government Dashboard**: Monitor farmer requests and trends
+- **PWA Capabilities**: Install on mobile devices, push notifications
+- **Responsive Design**: Optimized for mobile, tablet, and desktop
+
+### 🎯 Farmer-Friendly Design
+- Large touch targets for mobile use
+- High contrast colors for better visibility
+- Simple, intuitive interface
+- Support for low-bandwidth connections
+- Offline-first approach
+
+## Tech Stack
+
+### Frontend
+- **React 18** with TypeScript
+- **Tailwind CSS** for styling
+- **React Router** for navigation
+- **Lucide React** for icons
+- **Web Speech API** for voice features
+
+### PWA Features
+- Service Workers for offline functionality
+- Web App Manifest for installability
+- Background sync for data submission
+- Push notifications support
+
+### APIs (Mock/Future Integration)
+- OpenWeatherMap API for weather data
+- Google Maps API for location services
+- Google Translate API for language support
+- Backend API for crop recommendations
+
 
 This project uses the following tech stack:
 - Vite
