@@ -555,7 +555,7 @@ export default function Dashboard() {
     <div className={`min-h-screen bg-background transition-colors duration-300`}>
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 pr-56 md:pr-72">
+        <div className="container mx-auto px-4 py-4 pr-40 md:pr-56">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Leaf className="h-8 w-8 text-green-600" />
