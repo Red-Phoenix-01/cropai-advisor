@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/input-otp";
 
 import { useAuth } from "@/hooks/use-auth";
-import { ArrowRight, Loader2, Mail, UserX, MailCheck, TriangleAlert, LogIn } from "lucide-react";
+import { ArrowRight, Loader2, Mail, UserX, TriangleAlert, LogIn } from "lucide-react";
 import { Suspense, useState } from "react";
 import { useNavigate } from "react-router";
 

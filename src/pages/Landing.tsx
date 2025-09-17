@@ -4,34 +4,20 @@ import { useAuth } from "@/hooks/use-auth";
 import { motion } from "framer-motion";
 import { 
   ArrowRight, 
-  BarChart3, 
   CloudRain, 
   Leaf, 
-  MapPin, 
   Mic, 
-  Shield, 
   Smartphone, 
   TrendingUp, 
-  Users, 
   Wheat,
   Globe
 } from "lucide-react";
-import { useNavigate } from "react-router";
-import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useAuthActions } from "@convex-dev/auth/react";
-import { LogIn } from "lucide-react";
+import { useNavigate } from "react-router";
 
 export default function Landing() {
   const { isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
-  const [demoOpen, setDemoOpen] = useState(false);
 
   const cropEmojis: Record<string, string> = {
     Rice: "🌾",

@@ -2,14 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ConnectSection from "./ConnectSection";
 import { useAuth } from "@/hooks/use-auth";
-import { Leaf, Phone, AlertTriangle, Newspaper, ExternalLink, Calendar as CalendarIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Phone, AlertTriangle, Newspaper, Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { api } from "@/convex/_generated/api";
 import { useMutation } from "convex/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 type Language = "en" | "hi" | "ta" | "bn" | "ur" | "kn" | "te" | "ml";
