@@ -30,6 +30,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
@@ -186,11 +187,12 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                     <div className="mt-4 grid gap-2">
                       <Button
                         type="button"
-                        className="w-full"
+                        className="w-full border-2 border-green-600 text-green-700 hover:bg-green-50 dark:text-green-300 dark:border-green-500 dark:hover:bg-green-900/20"
                         variant="outline"
                         onClick={async () => {
                           try {
-                            setIsLoading(true);
+                            setError(null);
+                            setGoogleLoading(true);
                             await signIn("google");
                           } catch (error) {
                             setError(
@@ -198,15 +200,26 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                                 ? error.message
                                 : "Google sign-in failed. Please try again."
                             );
-                            setIsLoading(false);
+                          } finally {
+                            setGoogleLoading(false);
                           }
                         }}
-                        disabled={isLoading}
+                        disabled={googleLoading}
                         aria-label="Continue with Google"
                         title="Continue with Google"
+                        aria-busy={googleLoading}
                       >
-                        <LogIn className="mr-2 h-4 w-4" />
-                        Continue with Google
+                        {googleLoading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Signing in...
+                          </>
+                        ) : (
+                          <>
+                            <LogIn className="mr-2 h-4 w-4" />
+                            Continue with Google
+                          </>
+                        )}
                       </Button>
 
                       <Button
@@ -214,7 +227,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                         variant="outline"
                         className="w-full"
                         onClick={handleGuestLogin}
-                        disabled={isLoading}
+                        disabled={isLoading || googleLoading}
                       >
                         <UserX className="mr-2 h-4 w-4" />
                         Continue as Guest
