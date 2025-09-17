@@ -168,12 +168,13 @@ export default function Landing() {
               <Button
                 size="lg"
                 variant="outline"
-                className="text-lg px-8 py-6 border-2"
+                className="text-lg px-8 py-6 border-2 border-green-600 text-green-700 hover:bg-green-50 dark:text-green-300 dark:border-green-500 dark:hover:bg-green-900/20 rounded-full"
                 onClick={() => navigate("/auth")}
                 aria-label="Sign in"
                 title="Sign in"
               >
                 Sign in
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </motion.div>
