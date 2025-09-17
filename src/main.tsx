@@ -53,6 +53,12 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/connect" element={<ConnectPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          {/* Global footer */}
+          <footer className="mt-10 border-t">
+            <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
+              Made with ❤️ for Indian Farmers
+            </div>
+          </footer>
         </BrowserRouter>
         <Toaster />
       </ConvexAuthProvider>

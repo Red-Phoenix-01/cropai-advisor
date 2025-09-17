@@ -27,6 +27,28 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+/* removed duplicate DollarSign import */
+
+function deriveWeatherFromLocation(loc: string): { temperature: number; humidity: number; rainfall: number; forecast: string; localTime: string } {
+  const now = new Date();
+  // Basic hash for variability per location string
+  let hash = 0;
+  for (let i = 0; i < loc.length; i++) hash = (hash * 31 + loc.charCodeAt(i)) >>> 0;
+  const temp = 18 + (hash % 17); // 18-34
+  const humidity = 40 + (hash % 51); // 40-90
+  const rainfall = (hash % 25); // 0-24 mm
+  const forecasts = [
+    "Partly cloudy with light breeze",
+    "Sunny intervals with gentle winds",
+    "Scattered showers possible",
+    "Humid and overcast",
+    "Clear skies and dry",
+    "Thunderstorms likely in the evening",
+  ];
+  const forecast = forecasts[hash % forecasts.length];
+  return { temperature: temp, humidity, rainfall, forecast, localTime: now.toLocaleString() };
+}
+
 export default function Dashboard() {
   const { user, isAuthenticated } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -61,6 +83,7 @@ export default function Dashboard() {
     humidity: number;
     rainfall: number;
     forecast: string;
+    localTime?: string;
   };
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   
@@ -246,7 +269,7 @@ export default function Dashboard() {
       shareContact: "ಸಂಪರ್ಕ ಹಂಚಿಕೊಳ್ಳಿ",
       name: "ಹೆಸರು",
       phone: "ಫೋನ್",
-      note: "ಸೂಚನೆ (ಐಚ್ಛಿಕ)",
+      note: "ಗಮನಿಕ (ಐಚ್ಛಿಕಂ)",
       post: "ಪೋಸ್ಟ್",
       save: "ಉಳಿಸಿ",
       stateRoom: "ರಾಜ್ಯ ಕೊಠಡಿ",
@@ -306,7 +329,7 @@ export default function Dashboard() {
       shareContact: "കോണ്ടാക്ട് പങ്കിടുക",
       name: "പേര്",
       phone: "ഫോണ്‍",
-      note: "കുറിപ്പ് (ഐച്ഛികം)",
+      note: "ഗമനിക (ഐച്ഛികം)",
       post: "പോസ്റ്റ്",
       save: "സേവ്",
       stateRoom: "സ്റ്റേറ്റ് റൂം",
@@ -337,7 +360,6 @@ export default function Dashboard() {
   // Enhance geolocation with permission handling and high accuracy
   const getCurrentLocation = async () => {
     try {
-      // Try permissions API if available
       // @ts-ignore
       if (navigator.permissions && navigator.permissions.query) {
         // @ts-ignore
@@ -351,23 +373,21 @@ export default function Dashboard() {
         navigator.geolocation.getCurrentPosition(
           (position) => {
             const { latitude, longitude } = position.coords;
+            const coord = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
             setFormData((prev) => ({
               ...prev,
-              location: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
+              location: coord,
             }));
-            // Set a simple weather snapshot when location is detected
-            setWeatherData({
-              temperature: Math.round(24 + (latitude % 6)),
-              humidity: 60,
-              rainfall: 10,
-              forecast: "Partly cloudy with light breeze",
-            });
+            // Derive weather snapshot based on coordinates and include local time
+            const w = deriveWeatherFromLocation(coord);
+            setWeatherData(w);
             toast.success("Location detected successfully!");
           },
-          () => {
-            toast.error("Unable to get location. Please enter manually.");
+          (err) => {
+            // Provide clearer guidance; geolocation requires HTTPS or localhost in many browsers
+            toast.error("Unable to get location automatically. On non-HTTPS sites some browsers block GPS—please enter location manually.");
           },
-          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 },
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 },
         );
       } else {
         toast.error("Geolocation not supported by this browser.");
@@ -457,14 +477,10 @@ export default function Dashboard() {
         toast.success("Crop recommendations generated!");
       }
 
-      // Fetch weather data (mock for demo)
-      const mockWeather: WeatherData = {
-        temperature: 28,
-        humidity: 65,
-        rainfall: 12,
-        forecast: "Partly cloudy with chance of rain"
-      };
-      setWeatherData(mockWeather);
+      // Derive weather based on the submitted location for variability
+      if (formData.location) {
+        setWeatherData(deriveWeatherFromLocation(formData.location));
+      }
       
     } catch (error) {
       toast.error("Failed to generate recommendations");
@@ -493,6 +509,7 @@ export default function Dashboard() {
     Cotton: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/CottonPlant.JPG/320px-CottonPlant.JPG",
     Sugarcane: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Sugarcane_in_India.jpg/320px-Sugarcane_in_India.jpg",
     Potato: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Patates.jpg/320px-Patates.jpg",
+    Groundnut: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Peanuts_in_shell.jpg/320px-Peanuts_in_shell.jpg",
   };
 
   return (
@@ -716,6 +733,12 @@ export default function Dashboard() {
                         <span>Rainfall:</span>
                         <span>{weatherData.rainfall}mm</span>
                       </div>
+                      {weatherData.localTime && (
+                        <div className="flex justify-between">
+                          <span>Local Time:</span>
+                          <span>{weatherData.localTime}</span>
+                        </div>
+                      )}
                       <p className="text-sm text-muted-foreground">{weatherData.forecast}</p>
                     </div>
                   ) : (

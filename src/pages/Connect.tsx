@@ -4,6 +4,8 @@ import ConnectSection from "./ConnectSection";
 import { useAuth } from "@/hooks/use-auth";
 import { Leaf, Phone } from "lucide-react";
 import { useMemo, useState } from "react";
+import { api } from "@/convex/_generated/api";
+import { useMutation } from "convex/react";
 
 type Language = "en" | "hi" | "ta" | "bn" | "ur" | "kn" | "te" | "ml";
 
@@ -27,6 +29,37 @@ export default function ConnectPage() {
   const [lang] = useState<Language>("en");
   const t = useMemo(() => packs[lang], [lang]);
 
+  // Floating AI bot popout
+  const sendBotSuggestion = useMutation(api.connect.sendBotSuggestion);
+  const [season, setSeason] = useState<"kharif" | "rabi" | "zaid">("kharif");
+  const [botOpen, setBotOpen] = useState(false);
+
+  function inferStateLocal(location?: string | null): string {
+    const loc = (location ?? "").toLowerCase();
+    const pairs: Record<string, string> = {
+      chennai: "tamil nadu", coimbatore: "tamil nadu", madurai: "tamil nadu",
+      kolkata: "west bengal", howrah: "west bengal",
+      lucknow: "uttar pradesh", kanpur: "uttar pradesh",
+      patna: "bihar", bhopal: "madhya pradesh", indore: "madhya pradesh",
+      ahmedabad: "gujarat", surat: "gujarat",
+      bengaluru: "karnataka", bangalore: "karnataka", mysuru: "karnataka", mysore: "karnataka",
+      hyderabad: "andhra pradesh", vijayawada: "andhra pradesh", visakhapatnam: "andhra pradesh",
+      kochi: "kerala", thiruvananthapuram: "kerala", ernakulam: "kerala",
+      amritsar: "punjab", ludhiana: "punjab", gurugram: "haryana", faridabad: "haryana",
+      guwahati: "assam", ranchi: "jharkhand",
+    };
+    for (const [k, v] of Object.entries(pairs)) if (loc.includes(k)) return v;
+    const states = ["tamil nadu","jharkhand","kerala","punjab","west bengal","uttar pradesh","gujarat","haryana","madhya pradesh","assam","andhra pradesh","karnataka","bihar","maharashtra","rajasthan"];
+    for (const s of states) if (loc.includes(s)) return s;
+    return "tamil nadu";
+  }
+
+  async function triggerBot() {
+    const state = inferStateLocal(user?.location ?? "");
+    await sendBotSuggestion({ state, season });
+    setBotOpen(false);
+  }
+
   const sampleContacts = [
     { name: "Rajesh Kumar", state: "Punjab", note: "Wheat seeds supplier", phone: "98765 43210" },
     { name: "Priya Sharma", state: "Haryana", note: "Rice nursery", phone: "91234 56780" },
@@ -39,7 +72,12 @@ export default function ConnectPage() {
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Leaf className="h-7 w-7 text-green-600" />
+            {/* Replace Leaf icon with provided SVG data URL */}
+            <img
+              src={"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2316A34A'/%3E%3Cpath d='M30 70h40v5H30z' fill='%23fff'/%3E%3Cpath d='M45 25v45M35 35l20 20M65 35L45 55' stroke='%23fff' stroke-width='3' fill='none'/%3E%3C/svg%3E"}
+              alt="Connect"
+              className="h-7 w-7"
+            />
             <div>
               <h1 className="text-xl font-bold tracking-tight">{t.connect}</h1>
               <p className="text-sm text-muted-foreground">Chat with nearby farmers and share contacts</p>
@@ -78,6 +116,39 @@ export default function ConnectPage() {
           userLocation={user?.location ?? ""}
         />
       </main>
+
+      {/* Floating AI bot popout (bottom-right) */}
+      <div className="fixed bottom-5 right-5 z-50">
+        {!botOpen ? (
+          <button
+            className="h-12 w-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg text-white flex items-center justify-center"
+            onClick={() => setBotOpen(true)}
+            aria-label="Open AI Bot"
+          >
+            ★
+          </button>
+        ) : (
+          <div className="w-64 rounded-xl border bg-card shadow-xl p-3">
+            <div className="text-sm font-medium mb-2">AI Crop Bot</div>
+            <div className="mb-2">
+              <label className="text-xs text-muted-foreground">Season</label>
+              <select
+                className="mt-1 w-full rounded-md border bg-background px-2 py-1 text-sm"
+                value={season}
+                onChange={(e) => setSeason(e.target.value as typeof season)}
+              >
+                <option value="kharif">Kharif</option>
+                <option value="rabi">Rabi</option>
+                <option value="zaid">Zaid</option>
+              </select>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" size="sm" onClick={() => setBotOpen(false)}>Close</Button>
+              <Button size="sm" onClick={triggerBot}>Ask</Button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

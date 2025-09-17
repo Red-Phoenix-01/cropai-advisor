@@ -142,6 +142,8 @@ export default function ConnectSection(props: {
                 <div key={m._id} className="text-sm">
                   <div className="text-xs text-muted-foreground mb-0.5">
                     {m.userName ?? "Farmer"}
+                    {" • "}
+                    {new Date(m._creationTime).toLocaleTimeString()}
                   </div>
                   <div>{m.text}</div>
                 </div>

@@ -4,18 +4,18 @@ import { getCurrentUser } from "./users";
 
 // Add state market price dataset (per your provided data)
 const stateMarketPrices: Record<string, Record<string, number>> = {
-  "tamil nadu": { Rice: 2200, Maize: 1750, Pulses: 4800, Millets: 2400, Potato: 1100 },
-  "jharkhand": { Rice: 2200, Maize: 1800, Pulses: 5000, Millets: 2500, Potato: 1200 },
-  "kerala": { Rice: 2300, Maize: 1700, Pulses: 4700, Millets: 2300, Potato: 1000 },
-  "punjab": { Rice: 2100, Maize: 1900, Pulses: 5300, Millets: 2600, Potato: 1250 },
-  "west bengal": { Rice: 2150, Maize: 1850, Pulses: 5100, Millets: 2500, Potato: 1150 },
-  "uttar pradesh": { Rice: 2050, Maize: 1800, Pulses: 4950, Millets: 2450, Potato: 1175 },
-  "gujarat": { Rice: 2250, Maize: 1750, Pulses: 4850, Millets: 2400, Potato: 1100 },
-  "haryana": { Rice: 2100, Maize: 1850, Pulses: 5100, Millets: 2600, Potato: 1200 },
-  "madhya pradesh": { Rice: 2100, Maize: 1800, Pulses: 5000, Millets: 2550, Potato: 1150 },
-  "assam": { Rice: 2200, Maize: 1650, Pulses: 4700, Millets: 2300, Potato: 1050 },
-  "andhra pradesh": { Rice: 2150, Maize: 1750, Pulses: 4900, Millets: 2450, Potato: 1100 },
-  "karnataka": { Rice: 2150, Maize: 1700, Pulses: 4800, Millets: 2400, Potato: 1100 },
+  "tamil nadu": { Rice: 2200, Maize: 1750, Pulses: 4800, Millets: 2400, Potato: 1100, Sugarcane: 1800, Groundnut: 2300 },
+  "jharkhand": { Rice: 2200, Maize: 1800, Pulses: 5000, Millets: 2500, Potato: 1200, Sugarcane: 1700, Groundnut: 2100 },
+  "kerala": { Rice: 2300, Maize: 1700, Pulses: 4700, Millets: 2300, Potato: 1000, Sugarcane: 1900, Groundnut: 2000 },
+  "punjab": { Rice: 2100, Maize: 1900, Pulses: 5300, Millets: 2600, Potato: 1250, Sugarcane: 2000, Groundnut: 2200 },
+  "west bengal": { Rice: 2150, Maize: 1850, Pulses: 5100, Millets: 2500, Potato: 1150, Sugarcane: 1750, Groundnut: 2400 },
+  "uttar pradesh": { Rice: 2050, Maize: 1800, Pulses: 4950, Millets: 2450, Potato: 1175, Sugarcane: 1850, Groundnut: 2150 },
+  "gujarat": { Rice: 2250, Maize: 1750, Pulses: 4850, Millets: 2400, Potato: 1100, Sugarcane: 1800, Groundnut: 2500 },
+  "haryana": { Rice: 2100, Maize: 1850, Pulses: 5100, Millets: 2600, Potato: 1200, Sugarcane: 1900, Groundnut: 2000 },
+  "madhya pradesh": { Rice: 2100, Maize: 1800, Pulses: 5000, Millets: 2550, Potato: 1150, Sugarcane: 1700, Groundnut: 2250 },
+  "assam": { Rice: 2200, Maize: 1650, Pulses: 4700, Millets: 2300, Potato: 1050, Sugarcane: 1650, Groundnut: 1950 },
+  "andhra pradesh": { Rice: 2150, Maize: 1750, Pulses: 4900, Millets: 2450, Potato: 1100, Sugarcane: 1850, Groundnut: 2350 },
+  "karnataka": { Rice: 2150, Maize: 1700, Pulses: 4800, Millets: 2400, Potato: 1100, Sugarcane: 1800, Groundnut: 2250 },
 };
 
 // Helper: infer state from free-text location
@@ -255,10 +255,23 @@ function generateCropRecommendations(
       name: "Sugarcane",
       confidence: 0.78,
       explanation: "Very high water availability and suitable pH for sugarcane.",
-      profitEstimate: 65000,
+      profitEstimate: withPrice("Sugarcane", 65000),
       waterUsage: "Very High (1800-2500mm)",
       fertilizerAdvice: "Apply 280kg N, 90kg P2O5, 90kg K2O per hectare",
       irrigationAdvice: "Regular irrigation every 7-10 days",
+    });
+  }
+
+  // Groundnut (peanut) – well-drained soils, moderate water
+  if (soilData.ph >= 6.0 && soilData.ph <= 7.8 && soilData.waterAvailability >= 35 && soilData.soilMoisture >= 25) {
+    crops.push({
+      name: "Groundnut",
+      confidence: 0.58,
+      explanation: "Thrives in well-drained soils with moderate water; benefits from balanced K.",
+      profitEstimate: withPrice("Groundnut", 40000),
+      waterUsage: "Medium (500-700mm)",
+      fertilizerAdvice: "Moderate P and K; gypsum at flowering improves pod filling.",
+      irrigationAdvice: "Avoid waterlogging; irrigate lightly during pegging and pod development.",
     });
   }
 
