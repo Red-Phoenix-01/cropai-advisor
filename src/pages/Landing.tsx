@@ -114,19 +114,7 @@ export default function Landing() {
               </div>
             </div>
             
-            <div className="mt-1 flex items-center gap-4 pr-32 md:pr-48">
-              {isAuthenticated ? (
-                <Button onClick={() => navigate("/dashboard")}>
-                  Dashboard
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              ) : (
-                <Button onClick={() => navigate("/auth")}>
-                  Get Started
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              )}
-            </div>
+            <div className="mt-1 pr-32 md:pr-48" />
           </div>
         </div>
       </nav>
