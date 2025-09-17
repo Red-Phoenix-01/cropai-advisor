@@ -23,6 +23,7 @@ import {
   Volume2,
   DollarSign
 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -80,6 +81,8 @@ export default function Dashboard() {
   const [isListening, setIsListening] = useState(false);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [hasRequestedRecs, setHasRequestedRecs] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -298,7 +301,7 @@ export default function Dashboard() {
       stateRoom: "ರಾಜ್ಯ ಕೊಠಡಿ",
     },
     te: {
-      title: "KisanYatra: ఏఐ పంట సిఫార్సు వ్యవస్థ",
+      title: "KisanYatra: ఏఐ పంట సిఫార్సు వ్యవస్త",
       subtitle: "మీ నేల డేటా ఆధారంగా వ్యక్తిగత సిఫార్సులు",
       soilData: "నేల డేటా",
       nitrogen: "నైట్రోజన్ (N) - కేజీ/హె",
@@ -307,7 +310,7 @@ export default function Dashboard() {
       ph: "pH స్థాయి",
       soilMoisture: "నేల తేమ (%)",
       waterAvailability: "నీటి లభ్యత (%)",
-      location: "స్థానం",
+      location: "స్�ానం",
       getRecommendation: "పంట సిఫార్సు పొందండి",
       recommendations: "సిఫారసు చేసిన పంటలు",
       marketPrices: "మారుకಟ్టె బెలెగళు",
@@ -380,12 +383,14 @@ export default function Dashboard() {
   // Enhance geolocation with permission handling, reverse geocoding (optional), and accurate weather
   const getCurrentLocation = async () => {
     try {
+      setIsLocating(true);
       // @ts-ignore
       if (navigator.permissions && navigator.permissions.query) {
         // @ts-ignore
         const status = await navigator.permissions.query({ name: "geolocation" });
         if (status.state === "denied") {
           toast.error("Location permission denied. Please allow location access in browser settings.");
+          setIsLocating(false);
           return;
         }
       }
@@ -422,17 +427,21 @@ export default function Dashboard() {
               setWeatherData(deriveWeatherFromLocation(pretty));
             }
             toast.success("Location detected successfully!");
+            setIsLocating(false);
           },
           () => {
             toast.error("Unable to get location automatically. Please enter location manually.");
+            setIsLocating(false);
           },
           { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 },
         );
       } else {
         toast.error("Geolocation not supported by this browser.");
+        setIsLocating(false);
       }
     } catch {
       toast.error("Location access error. Please enter manually.");
+      setIsLocating(false);
     }
   };
 
@@ -494,7 +503,7 @@ export default function Dashboard() {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+    setIsSubmitting(true);
     try {
       const result = await createRecommendation({
         nitrogen: parseFloat(formData.nitrogen),
@@ -523,6 +532,8 @@ export default function Dashboard() {
       
     } catch (error) {
       toast.error("Failed to generate recommendations");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -555,7 +566,7 @@ export default function Dashboard() {
     <div className={`min-h-screen bg-background transition-colors duration-300`}>
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 pr-40 md:pr-56">
+        <div className="container mx-auto px-4 py-4 pr-56 md:pr-72">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Leaf className="h-8 w-8 text-green-600" />
@@ -571,6 +582,7 @@ export default function Dashboard() {
                 variant="outline"
                 onClick={() => (window.location.href = "/connect")}
                 className="hidden sm:inline-flex"
+                disabled={isSubmitting || isLocating}
               >
                 {t.connect}
               </Button>
@@ -709,22 +721,35 @@ export default function Dashboard() {
                           value={formData.location}
                           onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
                           required
+                          inputMode="text"
                         />
-                        <Button type="button" variant="outline" onClick={getCurrentLocation}>
-                          <MapPin className="h-4 w-4" />
+                        <Button type="button" variant="outline" onClick={getCurrentLocation} disabled={isLocating}>
+                          {isLocating ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <MapPin className="h-4 w-4" />
+                          )}
                         </Button>
                       </div>
                     </div>
                     
                     <div className="flex gap-2">
-                      <Button type="submit" className="flex-1">
-                        {t.getRecommendation}
+                      <Button type="submit" className="flex-1" disabled={isSubmitting}>
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Generating...
+                          </>
+                        ) : (
+                          t.getRecommendation
+                        )}
                       </Button>
                       <Button
                         type="button"
                         variant="outline"
                         onClick={startListening}
-                        disabled={isListening}
+                        disabled={isListening || isSubmitting || isLocating}
+                        aria-busy={isListening}
                       >
                         {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
                       </Button>

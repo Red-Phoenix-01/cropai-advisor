@@ -114,7 +114,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       {/* Auth Content */}
       <div className="flex-1 flex items-center justify-center">
         <div className="flex items-center justify-center h-full flex-col">
-        <Card className="min-w-[350px] pb-0 border shadow-md">
+        <Card className="w-full max-w-sm pb-0 border shadow-md">
           {step === "signIn" ? (
             <>
               <CardHeader className="text-center">
@@ -144,6 +144,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                         placeholder="name@example.com"
                         type="email"
                         inputMode="email"
+                        autoComplete="email"
                         className="pl-9"
                         disabled={isLoading}
                         required
@@ -157,6 +158,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                       disabled={isLoading}
                       aria-label="Send verification code"
                       title="Send verification code"
+                      aria-busy={isLoading}
                     >
                       {isLoading ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -294,6 +296,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                     type="submit"
                     className="w-full"
                     disabled={isLoading || otp.length !== 6}
+                    aria-busy={isLoading}
                   >
                     {isLoading ? (
                       <>
