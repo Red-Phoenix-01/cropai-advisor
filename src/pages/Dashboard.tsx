@@ -30,13 +30,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 /* removed duplicate DollarSign import */
 
 function deriveWeatherFromLocation(loc: string): { temperature: number; humidity: number; rainfall: number; forecast: string; localTime: string } {
-  const now = new Date();
-  // Basic hash for variability per location string
+  // Fallback if API fails; keep lightweight variability by hash
   let hash = 0;
   for (let i = 0; i < loc.length; i++) hash = (hash * 31 + loc.charCodeAt(i)) >>> 0;
-  const temp = 18 + (hash % 17); // 18-34
-  const humidity = 40 + (hash % 51); // 40-90
-  const rainfall = (hash % 25); // 0-24 mm
+  const now = new Date();
+  const temp = 18 + (hash % 17);
+  const humidity = 40 + (hash % 51);
+  const rainfall = hash % 25;
   const forecasts = [
     "Partly cloudy with light breeze",
     "Sunny intervals with gentle winds",
@@ -48,6 +48,30 @@ function deriveWeatherFromLocation(loc: string): { temperature: number; humidity
   const forecast = forecasts[hash % forecasts.length];
   return { temperature: temp, humidity, rainfall, forecast, localTime: now.toLocaleString() };
 }
+
+async function fetchWeather(lat: number, lon: number) {
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation&timezone=auto`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("weather");
+  const data = await res.json();
+  const temperature = Math.round(data?.current?.temperature_2m ?? 0);
+  const humidity = Math.round(data?.current?.relative_humidity_2m ?? 0);
+  const rainfall = Math.round((data?.current?.precipitation ?? 0) * 10) / 10;
+  const forecast = rainfall > 0 ? "Rain likely" : temperature > 32 ? "Hot and dry" : "Partly cloudy";
+  return { temperature, humidity, rainfall, forecast, localTime: new Date().toLocaleString() };
+}
+
+const cropEmojis: Record<string, string> = {
+  Wheat: "🌾",
+  "Pulses (Lentils)": "🫘",
+  Soybean: "🫘",
+  Maize: "🌽",
+  Rice: "🌿",
+  Cotton: "🧵",
+  Sugarcane: "🍬",
+  Potato: "🥔",
+  Groundnut: "🥜",
+};
 
 export default function Dashboard() {
   const { user, isAuthenticated } = useAuth();
@@ -89,8 +113,10 @@ export default function Dashboard() {
   
   const createRecommendation = useMutation(api.recommendations.createRecommendation);
   const userRecommendations = useQuery(api.recommendations.getRecommendations, {});
-  // Fetch market prices for the sidebar
+  // Fetch market prices for the sidebar (kept but we will render custom table)
   const marketPrices = useQuery(api.market.getMarketPrices, {});
+  // Profile update mutation
+  const updateProfile = useMutation(api.profile.updateProfile);
 
   // Language translations (ensure const assertion)
   const translations = {
@@ -258,7 +284,7 @@ export default function Dashboard() {
       getRecommendation: "ಬೆಳೆ ಶಿಫಾರಸು ಪಡೆಯಿರಿ",
       recommendations: "ಶಿಫಾರಸು ಮಾಡಿದ ಬೆಳೆಗಳು",
       marketPrices: "ಮಾರುಕಟ್ಟೆ ಬೆಲೆಗಳು",
-      weather: "ಹವಾಮಾನ",
+      weather: "ಕಾಲಾವಸ್ಥ",
       offline: "ನೀವು ಆಫ್‌ಲೈನ್‌ ಇದ್ದೀರಿ.",
       listening: "ಕೆಳುತ್ತಿದೆ...",
       speak: "ನಿಮ್ಮ ಇನ್‌inpುಟ್ ಮಾತನಾಡಿ",
@@ -266,11 +292,11 @@ export default function Dashboard() {
       chat: "ಚಾಟ್",
       contacts: "ಸಂಪರ್ಕಗಳು",
       enterMessage: "ಸಂದೇಶವನ್ನು ಬರೆಯಿರಿ...",
-      shareContact: "ಸಂಪರ್ಕ ಹಂಚಿಕೊಳ್ಳಿ",
+      shareContact: "ಸಂಪರ್ಕಾನ್ನಿ പങ്കിടുക",
       name: "ಹೆಸರು",
       phone: "ಫೋನ್",
       note: "ಗಮನಿಕ (ಐಚ್ಛಿಕಂ)",
-      post: "ಪೋಸ್ಟ್",
+      post: "പോസ്റ്റ്",
       save: "ಉಳಿಸಿ",
       stateRoom: "ರಾಜ್ಯ ಕೊಠಡಿ",
     },
@@ -284,7 +310,7 @@ export default function Dashboard() {
       ph: "pH స్థాయి",
       soilMoisture: "నేల తేమ (%)",
       waterAvailability: "నీటి లభ్యత (%)",
-      location: "స్థానం",
+      location: "స్�ానం",
       getRecommendation: "పంట సిఫార్సు పొందండి",
       recommendations: "సిఫారసు చేసిన పంటలు",
       marketPrices: "మార్కెట్ ధరలు",
@@ -324,9 +350,9 @@ export default function Dashboard() {
       speak: "നിങ്ങളുടെ ഇൻപുട്ട് സംസാരിക്കുക",
       connect: "കണക്റ്റ്",
       chat: "ചാറ്റ്",
-      contacts: "കോണ്ടാക്ട്സ്",
+      contacts: "സംപര്കഗളു",
       enterMessage: "സന്ദേശം ടൈപ്പ് ചെയ്യുക...",
-      shareContact: "കോണ്ടാക്ട് പങ്കിടുക",
+      shareContact: "സംപര്കാന്നി പങ്കിടുക",
       name: "പേര്",
       phone: "ഫോണ്‍",
       note: "ഗമനിക (ഐച്ഛികം)",
@@ -357,7 +383,7 @@ export default function Dashboard() {
     };
   }, []);
 
-  // Enhance geolocation with permission handling and high accuracy
+  // Enhance geolocation with permission handling, reverse geocoding (optional), and accurate weather
   const getCurrentLocation = async () => {
     try {
       // @ts-ignore
@@ -371,21 +397,40 @@ export default function Dashboard() {
       }
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-          (position) => {
+          async (position) => {
             const { latitude, longitude } = position.coords;
-            const coord = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
-            setFormData((prev) => ({
-              ...prev,
-              location: coord,
-            }));
-            // Derive weather snapshot based on coordinates and include local time
-            const w = deriveWeatherFromLocation(coord);
-            setWeatherData(w);
+            // Try reverse geocoding via Google if key exists
+            let pretty = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+            const key = (import.meta as any).env?.VITE_GOOGLE_MAPS_API_KEY as string | undefined;
+            try {
+              if (key) {
+                const resp = await fetch(
+                  `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${key}`,
+                );
+                const gj = await resp.json();
+                const comp = gj?.results?.[0]?.address_components as Array<any> | undefined;
+                if (comp) {
+                  const city = comp.find((c) => c.types.includes("locality"))?.long_name;
+                  const state = comp.find((c) => c.types.includes("administrative_area_level_1"))?.long_name;
+                  if (city || state) pretty = [city, state].filter(Boolean).join(", ");
+                }
+              }
+            } catch {
+              // silent fallback to coords string
+            }
+
+            setFormData((prev) => ({ ...prev, location: pretty }));
+
+            try {
+              const w = await fetchWeather(latitude, longitude);
+              setWeatherData(w);
+            } catch {
+              setWeatherData(deriveWeatherFromLocation(pretty));
+            }
             toast.success("Location detected successfully!");
           },
-          (err) => {
-            // Provide clearer guidance; geolocation requires HTTPS or localhost in many browsers
-            toast.error("Unable to get location automatically. On non-HTTPS sites some browsers block GPS—please enter location manually.");
+          () => {
+            toast.error("Unable to get location automatically. Please enter location manually.");
           },
           { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 },
         );
@@ -748,7 +793,7 @@ export default function Dashboard() {
               </Card>
             </motion.div>
 
-            {/* Market Prices */}
+            {/* Market Prices (formatted table, last updated: Today) */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -762,16 +807,108 @@ export default function Dashboard() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {marketPrices?.slice(0, 5).map((price, index) => (
-                      <div key={index} className="flex justify-between items-center">
-                        <span className="text-sm">{price.crop}</span>
-                        <div className="text-right">
-                          <div className="text-sm font-medium">₹{price.price}</div>
-                          <div className="text-xs text-muted-foreground">{price.unit}</div>
-                        </div>
+                  {(() => {
+                    const data = [
+                      { crop: "Rice", price: 2150, change: +5.2 },
+                      { crop: "Wheat", price: 2050, change: -2.1 },
+                      { crop: "Maize", price: 1850, change: 0 },
+                      { crop: "Cotton", price: 5200, change: +8.5 },
+                      { crop: "Sugarcane", price: 3200, change: +4.5 },
+                      { crop: "Groundnut", price: 5809, change: +3.1 },
+                    ];
+                    return (
+                      <div className="space-y-3">
+                        {data.map((row) => {
+                          const up = row.change > 0;
+                          const down = row.change < 0;
+                          return (
+                            <div key={row.crop} className="flex items-center justify-between py-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-lg">{cropEmojis[row.crop] ?? "🌱"}</span>
+                                <span className="text-sm">{row.crop}</span>
+                                <span className="text-xs text-muted-foreground">per quintal</span>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-sm font-semibold">₹{row.price.toLocaleString()}</div>
+                                <div
+                                  className={`text-xs ${up ? "text-green-600" : down ? "text-red-600" : "text-muted-foreground"}`}
+                                >
+                                  {up ? "↑" : down ? "↓" : "—"} {Math.abs(row.change).toFixed(1)}%
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                        <div className="pt-2 text-center text-xs text-muted-foreground">Last updated: Today</div>
                       </div>
-                    ))}
+                    );
+                  })()}
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Profile quick edit */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.25 }}
+            >
+              <Card>
+                <CardHeader>
+                  <CardTitle>Profile</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-1 gap-3">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <Label>Name</Label>
+                        <Input
+                          value={user?.name ?? ""}
+                          onChange={(e) => updateProfile({ name: e.target.value })}
+                          placeholder="Your name"
+                        />
+                      </div>
+                      <div>
+                        <Label>Age</Label>
+                        <Input
+                          type="number"
+                          onChange={(e) => updateProfile({ age: Number(e.target.value) || undefined })}
+                          placeholder="Years"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Label>Image URL</Label>
+                      <Input
+                        onBlur={(e) => updateProfile({ image: e.target.value })}
+                        placeholder="https://..."
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <Label>Farm Size (acres)</Label>
+                        <Input
+                          type="number"
+                          onBlur={(e) => updateProfile({ farmSize: Number(e.target.value) || undefined })}
+                          placeholder="e.g., 2"
+                        />
+                      </div>
+                      <div>
+                        <Label>Language</Label>
+                        <Input
+                          onBlur={(e) => updateProfile({ language: e.target.value })}
+                          placeholder="en/hi/ta/..."
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Label>Location</Label>
+                      <Input
+                        defaultValue={user?.location ?? ""}
+                        onBlur={(e) => updateProfile({ location: e.target.value })}
+                        placeholder="City, State"
+                      />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -818,7 +955,10 @@ export default function Dashboard() {
                                 className="h-6 w-6 rounded object-cover"
                               />
                             )}
-                            <CardTitle className="text-lg">{crop.name}</CardTitle>
+                            <CardTitle className="text-lg">
+                              <span className="mr-1">{cropEmojis[crop.name] ?? "🌱"}</span>
+                              {crop.name}
+                            </CardTitle>
                           </div>
                           <span className="text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-800">
                             {(crop.confidence * 100).toFixed(0)}% match

@@ -164,30 +164,37 @@ export const sendBotSuggestion = mutation({
     };
     const picks = seasonCrops[s] ?? ["Rice", "Maize"];
 
-    const why: Record<string, string> = {
-      Rice: "High rainfall and standing water tolerance during monsoon.",
-      Maize: "Adaptable crop with good returns across states.",
-      "Pulses (Lentils)": "Low water need and nitrogen fixing improves soil.",
-      Millets: "Drought tolerant and fits low water availability.",
-      Soybean: "Nitrogen fixing legume; suited for well-drained soils.",
-      Cotton: "Warm season crop thriving with adequate K and heat.",
-      Wheat: "Prefers cool, dry Rabi with neutral pH soils.",
-      Potato: "Cooler season tuber with high K demand.",
-      Mustard: "Cool season oilseed that fits Rabi rotation.",
-      Vegetables: "Short-duration crops suitable for Zaid window.",
+    const tips: Record<string, string> = {
+      Rice: "Transplant healthy seedlings; maintain shallow water early 🌾",
+      Maize: "Ensure good P at sowing; watch for fall armyworm 🌽",
+      "Pulses (Lentils)": "Avoid waterlogging; inoculate seeds with Rhizobium 🫘",
+      Millets: "Great drought tolerance; minimal irrigation needed 🌾",
+      Soybean: "Well-drained soil; critical water at pod-fill 🫘",
+      Cotton: "High K need during boll development 🧱",
+      Wheat: "Irrigate at CRI and grain fill; avoid lodging 🌾",
+      Potato: "High K; hill soil to cover tubers 🥔",
+      Mustard: "Avoid late sowing to escape high temp at flowering 🌼",
+      Vegetables: "Short-duration; plan staggered sowing 🥦",
     };
 
+    const greeting = (() => {
+      const hour = new Date().getHours();
+      if (hour < 12) return "Good morning 👋";
+      if (hour < 18) return "Good afternoon 👋";
+      return "Good evening 👋";
+    })();
+
     const top = picks.slice(0, 2);
-    const reason = top.map((c) => `${c}: ${why[c] ?? "Suitable for the season."}`).join(" | ");
+    const reasons = top.map((c) => `• ${c}: ${tips[c] ?? "Suitable for the season."}`).join("\n");
 
-    const message = `Season: ${args.season}. Suggested crops for ${state}: ${top.join(", ")}. Why this crop: ${reason}`;
+    const message =
+      `${greeting} Farmer!\n` +
+      `Season: ${args.season.toUpperCase()} • State: ${state}\n` +
+      `Suggested crops: ${top.join(", ")}\n` +
+      `Why these crops:\n${reasons}\n` +
+      `Would you like tips for fertilizer schedule or irrigation planning next? 💬`;
 
-    // Post as bot
-    // Use a fixed userName to display in UI
     return await ctx.db.insert("connectMessages", {
-      // Use a placeholder userId since schema requires it; reuse any authenticated user via a fake context isn't allowed,
-      // so we insert with an authenticated user's id but mark userName as bot for display.
-      // We still require auth to avoid abuse; the current user triggers the bot.
       userId: (await getCurrentUser(ctx))!._id,
       state: args.state,
       text: message,

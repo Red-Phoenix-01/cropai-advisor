@@ -18,6 +18,7 @@ import type * as auth from "../auth.js";
 import type * as connect from "../connect.js";
 import type * as http from "../http.js";
 import type * as market from "../market.js";
+import type * as profile from "../profile.js";
 import type * as recommendations from "../recommendations.js";
 import type * as seedData from "../seedData.js";
 import type * as users from "../users.js";
@@ -37,6 +38,7 @@ declare const fullApi: ApiFromModules<{
   connect: typeof connect;
   http: typeof http;
   market: typeof market;
+  profile: typeof profile;
   recommendations: typeof recommendations;
   seedData: typeof seedData;
   users: typeof users;

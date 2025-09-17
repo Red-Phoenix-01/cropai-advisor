@@ -33,6 +33,8 @@ const schema = defineSchema(
       location: v.optional(v.string()), // farmer location
       farmSize: v.optional(v.number()), // farm size in acres
       language: v.optional(v.string()), // preferred language
+      // Add age field for profile
+      age: v.optional(v.number()),
     }).index("email", ["email"]), // index for the email. do not remove or modify
 
     // Crop recommendations table
