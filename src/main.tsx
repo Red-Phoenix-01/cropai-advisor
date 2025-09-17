@@ -13,6 +13,7 @@ import Landing from "./pages/Landing.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import "./types/global.d.ts";
 import ConnectPage from "./pages/Connect.tsx";
+import NewsPage from "./pages/News.tsx";
 import { Moon, Sun } from "lucide-react";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
@@ -87,6 +88,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/auth" element={<AuthPage redirectAfterAuth="/dashboard" />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/connect" element={<ConnectPage />} />
+            <Route path="/news" element={<NewsPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           {/* Global footer */}

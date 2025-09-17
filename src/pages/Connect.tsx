@@ -237,42 +237,18 @@ export default function ConnectPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Newspaper className="h-5 w-5 text-emerald-600" />
-              Farmer News & Schemes — Sep–Oct 2025
+              Farmer News & Schemes
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0">
-            <ScrollArea className="h-80">
-              <div className="divide-y">
-                {newsItems.map((item, idx) => (
-                  <div key={idx} className="p-4 flex flex-col gap-2">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <div className="font-semibold">{item.title}</div>
-                      <div className="flex items-center text-xs text-muted-foreground gap-1">
-                        <CalendarIcon className="h-3.5 w-3.5" />
-                        <span>{new Date(item.date).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{item.summary}</p>
-                    <div className="flex flex-wrap items-center gap-2">
-                      {item.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary" className="text-[11px]">
-                          {tag}
-                        </Badge>
-                      ))}
-                      <a
-                        href={item.source.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="ml-auto inline-flex items-center gap-1 text-xs text-emerald-700 hover:underline"
-                      >
-                        Source: {item.source.name}
-                        <ExternalLink className="h-3.5 w-3.5" />
-                      </a>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
+          <CardContent>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 justify-between">
+              <p className="text-sm text-muted-foreground">
+                Browse the latest govt schemes, policies, and market updates curated for farmers.
+              </p>
+              <Button onClick={() => (window.location.href = "/news")}>
+                Open News
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
