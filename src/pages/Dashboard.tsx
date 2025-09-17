@@ -26,7 +26,6 @@ import {
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ConnectSection from "./ConnectSection";
 
 export default function Dashboard() {
   const { user, isAuthenticated } = useAuth();
@@ -35,7 +34,8 @@ export default function Dashboard() {
   const [language, setLanguage] = useState<Language>("en");
   const [isListening, setIsListening] = useState(false);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
-  
+  const [hasRequestedRecs, setHasRequestedRecs] = useState(false);
+
   // Form state
   const [formData, setFormData] = useState({
     nitrogen: "",
@@ -66,6 +66,7 @@ export default function Dashboard() {
   
   const createRecommendation = useMutation(api.recommendations.createRecommendation);
   const userRecommendations = useQuery(api.recommendations.getRecommendations, {});
+  // Fetch market prices for the sidebar
   const marketPrices = useQuery(api.market.getMarketPrices, {});
 
   // Language translations (ensure const assertion)
@@ -155,9 +156,9 @@ export default function Dashboard() {
       shareContact: "தொடர்பை பகிர்",
       name: "பெயர்",
       phone: "பேசி",
-      note: "குறிப்பு (விருப்பம்)",
-      post: "போஸ்ட்",
-      save: "சேமி",
+      note: "Note (optional)",
+      post: "Post",
+      save: "Save",
       stateRoom: "மாநில அறை",
     },
     bn: {
@@ -237,7 +238,7 @@ export default function Dashboard() {
       weather: "ಹವಾಮಾನ",
       offline: "ನೀವು ಆಫ್‌ಲೈನ್‌ ಇದ್ದೀರಿ.",
       listening: "ಕೆಳುತ್ತಿದೆ...",
-      speak: "ನಿಮ್ಮ ಇನ್‌ಪುಟ್ ಮಾತನಾಡಿ",
+      speak: "ನಿಮ್ಮ ಇನ್‌inpುಟ್ ಮಾತನಾಡಿ",
       connect: "ಕನೆಕ್ಟ್",
       chat: "ಚಾಟ್",
       contacts: "ಸಂಪರ್ಕಗಳು",
@@ -394,6 +395,7 @@ export default function Dashboard() {
 
       const recs = (result as any).recommendedCrops as typeof recommendations;
       setRecommendations(recs);
+      setHasRequestedRecs(true);
 
       if (Array.isArray(recs) && recs.length === 0) {
         toast.message("No exact matches found. Showing best-fit suggestions.");
@@ -443,6 +445,14 @@ export default function Dashboard() {
             </div>
             
             <div className="flex items-center gap-2">
+              {/* Add top-level Connect navigation button */}
+              <Button
+                variant="outline"
+                onClick={() => (window.location.href = "/connect")}
+                className="hidden sm:inline-flex"
+              >
+                {t.connect}
+              </Button>
               {/* Language Toggle */}
               <Select value={language} onValueChange={(val) => setLanguage(val as Language)}>
                 <SelectTrigger className="w-24">
@@ -681,7 +691,7 @@ export default function Dashboard() {
         </div>
 
         {/* Recommendations Results */}
-        {((recommendations && recommendations.length > 0) || (userRecommendations && userRecommendations.length > 0)) && (
+        {hasRequestedRecs && ((recommendations && recommendations.length > 0) || (userRecommendations && userRecommendations.length > 0)) && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -754,11 +764,7 @@ export default function Dashboard() {
           transition={{ duration: 0.5, delay: 0.35 }}
           className="mt-8"
         >
-          <ConnectSection
-            languagePack={t}
-            locationInput={formData.location}
-            userLocation={user?.location ?? ""}
-          />
+          {/* ConnectSection moved to dedicated page */}
         </motion.div>
       </div>
     </div>
