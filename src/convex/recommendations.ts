@@ -64,11 +64,16 @@ export const createRecommendation = mutation({
 
     const recommendedCrops = generateCropRecommendations(args, prices || undefined);
 
-    return await ctx.db.insert("recommendations", {
+    // Insert and then return the full created document (not just the id)
+    const id = await ctx.db.insert("recommendations", {
       userId: user._id,
       ...args,
       recommendedCrops,
     });
+
+    const created = await ctx.db.get(id);
+    if (!created) throw new Error("Failed to load created recommendation");
+    return created;
   },
 });
 

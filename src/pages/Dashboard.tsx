@@ -45,7 +45,15 @@ export default function Dashboard() {
     location: "",
   });
 
-  const [recommendations, setRecommendations] = useState(null);
+  const [recommendations, setRecommendations] = useState(null as null | Array<{
+    name: string;
+    confidence: number;
+    explanation: string;
+    profitEstimate: number;
+    waterUsage: string;
+    fertilizerAdvice: string;
+    irrigationAdvice: string;
+  }>);
   type WeatherData = {
     temperature: number;
     humidity: number;
@@ -209,9 +217,12 @@ export default function Dashboard() {
         waterAvailability: parseFloat(formData.waterAvailability),
         location: formData.location,
       });
-      
+
+      // Set recommendations from the created document without TS error
+      setRecommendations((result as any).recommendedCrops);
+
       toast.success("Crop recommendations generated!");
-      
+
       // Fetch weather data (mock for demo)
       const mockWeather: WeatherData = {
         temperature: 28,
@@ -487,7 +498,7 @@ export default function Dashboard() {
         </div>
 
         {/* Recommendations Results */}
-        {userRecommendations && userRecommendations.length > 0 && (
+        {((recommendations && recommendations.length > 0) || (userRecommendations && userRecommendations.length > 0)) && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -512,7 +523,7 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {userRecommendations[0]?.recommendedCrops.map((crop, index) => (
+                  {(recommendations ?? userRecommendations?.[0]?.recommendedCrops ?? []).map((crop, index) => (
                     <Card key={index} className="border-2 hover:border-green-400/60 transition-colors">
                       <CardHeader className="pb-3">
                         <div className="flex items-center justify-between">
