@@ -23,6 +23,9 @@ import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import WeatherCard from "./dashboard/WeatherCard";
+import MarketPricesCard from "./dashboard/MarketPricesCard";
+import RecommendationsList from "./dashboard/RecommendationsList";
 
 function deriveWeatherFromLocation(loc: string): { temperature: number; humidity: number; rainfall: number; forecast: string; localTime: string } {
   // Fallback if API fails; keep lightweight variability by hash
@@ -750,41 +753,7 @@ export default function Dashboard() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <CloudRain className="h-5 w-5" />
-                    {t.weather}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {weatherData ? (
-                    <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <span>Temperature:</span>
-                        <span>{weatherData.temperature}°C</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Humidity:</span>
-                        <span>{weatherData.humidity}%</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Rainfall:</span>
-                        <span>{weatherData.rainfall}mm</span>
-                      </div>
-                      {weatherData.localTime && (
-                        <div className="flex justify-between">
-                          <span>Local Time:</span>
-                          <span>{weatherData.localTime}</span>
-                        </div>
-                      )}
-                      <p className="text-sm text-muted-foreground">{weatherData.forecast}</p>
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground">Enter location to get weather data</p>
-                  )}
-                </CardContent>
-              </Card>
+              <WeatherCard t={t} weatherData={weatherData} />
             </motion.div>
 
             {/* Market Prices (formatted table, last updated: Today) */}
@@ -793,52 +762,7 @@ export default function Dashboard() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5" />
-                    {t.marketPrices}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {(() => {
-                    const data = [
-                      { crop: "Rice", price: 2150, change: +5.2 },
-                      { crop: "Wheat", price: 2050, change: -2.1 },
-                      { crop: "Maize", price: 1850, change: 0 },
-                      { crop: "Cotton", price: 5200, change: +8.5 },
-                      { crop: "Sugarcane", price: 3200, change: +4.5 },
-                      { crop: "Groundnut", price: 5809, change: +3.1 },
-                    ];
-                    return (
-                      <div className="space-y-3">
-                        {data.map((row) => {
-                          const up = row.change > 0;
-                          const down = row.change < 0;
-                          return (
-                            <div key={row.crop} className="flex items-center justify-between py-1">
-                              <div className="flex items-center gap-2">
-                                <span className="text-lg">{cropEmojis[row.crop] ?? "🌱"}</span>
-                                <span className="text-sm">{row.crop}</span>
-                                <span className="text-xs text-muted-foreground">per quintal</span>
-                              </div>
-                              <div className="text-right">
-                                <div className="text-sm font-semibold">₹{row.price.toLocaleString()}</div>
-                                <div
-                                  className={`text-xs ${up ? "text-green-600" : down ? "text-red-600" : "text-muted-foreground"}`}
-                                >
-                                  {up ? "↑" : down ? "↓" : "—"} {Math.abs(row.change).toFixed(1)}%
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                        <div className="pt-2 text-center text-xs text-muted-foreground">Last updated: Today</div>
-                      </div>
-                    );
-                  })()}
-                </CardContent>
-              </Card>
+              <MarketPricesCard t={t as any} cropEmojis={cropEmojis} />
             </motion.div>
           </div>
         </div>
@@ -851,69 +775,13 @@ export default function Dashboard() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="mt-8"
           >
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <Leaf className="h-5 w-5" />
-                    {t.recommendations}
-                  </CardTitle>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => speakText("Here are your crop recommendations")}
-                  >
-                    <Volume2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {(recommendations ?? userRecommendations?.[0]?.recommendedCrops ?? []).map((crop, index) => (
-                    <Card key={index} className="border-2 hover:border-green-400/60 transition-colors">
-                      <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            {/* Removed external crop image to prevent broken icons; keep emoji only */}
-                            <CardTitle className="text-lg">
-                              <span className="mr-1">{cropEmojis[crop.name] ?? "🌱"}</span>
-                              {crop.name}
-                            </CardTitle>
-                          </div>
-                          <span className="text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-800">
-                            {(crop.confidence * 100).toFixed(0)}% match
-                          </span>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <p className="text-sm text-muted-foreground">{crop.explanation}</p>
-
-                        <div className="flex items-center gap-6 text-sm">
-                          <div className="flex items-center gap-1">
-                            <span className="font-medium">₹{crop.profitEstimate.toLocaleString()}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Droplets className="h-4 w-4 text-blue-600" />
-                            <span>{crop.waterUsage}</span>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <div className="rounded-md bg-green-50 dark:bg-green-900/20 p-3 text-sm">
-                            <span className="font-medium">Fertilizer Advice</span>
-                            <div className="text-muted-foreground">{crop.fertilizerAdvice}</div>
-                          </div>
-                          <div className="rounded-md bg-blue-50 dark:bg-blue-900/20 p-3 text-sm">
-                            <span className="font-medium">Irrigation Advice</span>
-                            <div className="text-muted-foreground">{crop.irrigationAdvice}</div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <RecommendationsList
+              t={t as any}
+              cropEmojis={cropEmojis}
+              recommendations={recommendations}
+              userRecommendations={userRecommendations}
+              speakText={speakText}
+            />
           </motion.div>
         )}
 
