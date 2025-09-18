@@ -16,6 +16,8 @@ const stateMarketPrices: Record<string, Record<string, number>> = {
   "assam": { Rice: 2200, Maize: 1650, Pulses: 4700, Millets: 2300, Potato: 1050, Sugarcane: 1650, Groundnut: 1950 },
   "andhra pradesh": { Rice: 2150, Maize: 1750, Pulses: 4900, Millets: 2450, Potato: 1100, Sugarcane: 1850, Groundnut: 2350 },
   "karnataka": { Rice: 2150, Maize: 1700, Pulses: 4800, Millets: 2400, Potato: 1100, Sugarcane: 1800, Groundnut: 2250 },
+  "maharashtra": { Rice: 2150, Maize: 1850, Pulses: 5050, Millets: 2550, Potato: 1150, Sugarcane: 2000, Groundnut: 2450 },
+  "rajasthan":   { Rice: 2050, Maize: 1900, Pulses: 5200, Millets: 2650, Potato: 1200, Sugarcane: 1750, Groundnut: 2350 },
 };
 
 // Helper: infer state from free-text location
@@ -52,6 +54,12 @@ function inferState(location: string): string | null {
     "faridabad": "haryana",
     "guwahati": "assam",
     "ranchi": "jharkhand",
+    "mumbai": "maharashtra",
+    "pune": "maharashtra",
+    "nagpur": "maharashtra",
+    "jaipur": "rajasthan",
+    "jodhpur": "rajasthan",
+    "udaipur": "rajasthan",
   };
 
   for (const [city, state] of Object.entries(cityStateMap)) {
