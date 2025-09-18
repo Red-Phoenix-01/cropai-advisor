@@ -9,6 +9,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Loader2 } from "lucide-react";
 
 type LangPack = {
   connect: string;
@@ -93,6 +94,9 @@ export default function ConnectSection(props: {
   const [season, setSeason] = useState<"kharif" | "rabi" | "zaid">("kharif");
   const [confirmOpen, setConfirmOpen] = useState(false);
 
+  const [question, setQuestion] = useState<string>(""); // addition
+  const [isAsking, setIsAsking] = useState<boolean>(false); // addition
+
   async function onSend() {
     try {
       await sendMessage({ state, text: message });
@@ -118,9 +122,18 @@ export default function ConnectSection(props: {
 
   async function askBot() {
     try {
-      await sendBotSuggestion({ state, season });
+      setIsAsking(true);
+      await sendBotSuggestion({
+        state,
+        season,
+        question: question.trim() ? question.trim() : undefined,
+      });
+      setQuestion("");
+      toast.success("Asked the AI bot. Check the chat!");
     } catch {
       toast.error("Bot unavailable");
+    } finally {
+      setIsAsking(false);
     }
   }
 
@@ -179,7 +192,22 @@ export default function ConnectSection(props: {
                   <SelectItem value="zaid">Zaid</SelectItem>
                 </SelectContent>
               </Select>
-              <Button variant="outline" onClick={askBot}>Ask AI Bot</Button>
+              <Input
+                placeholder="Ask anything (e.g., best crops for sandy soil?)"
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                disabled={isAsking}
+              />
+              <Button variant="outline" onClick={askBot} disabled={isAsking}>
+                {isAsking ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Asking...
+                  </>
+                ) : (
+                  "Ask AI Bot"
+                )}
+              </Button>
             </div>
           </TabsContent>
 
