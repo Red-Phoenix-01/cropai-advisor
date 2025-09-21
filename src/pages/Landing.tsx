@@ -24,6 +24,8 @@ export default function Landing() {
   const [locating, setLocating] = useState(false);
   const [locationText, setLocationText] = useState<string | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
+  // Add: coordinates text to mirror "Latitude/Longitude" like the snippet
+  const [coordsText, setCoordsText] = useState<string | null>(null);
 
   const cropEmojis: Record<string, string> = {
     Rice: "🌾",
@@ -119,6 +121,8 @@ export default function Landing() {
   async function detectLocation() {
     setLocating(true);
     setLocationError(null);
+    // Clear previous coords before new attempt
+    setCoordsText(null);
     try {
       if (!("geolocation" in navigator)) {
         throw new Error("Geolocation not supported");
@@ -128,12 +132,15 @@ export default function Landing() {
           async (pos) => {
             try {
               const { latitude, longitude } = pos.coords;
+              // Show raw coordinates similar to the provided snippet
+              setCoordsText(`Latitude: ${latitude.toFixed(6)}, Longitude: ${longitude.toFixed(6)}`);
               const pretty = await reverseGeocode(latitude, longitude);
               setLocationText(pretty ?? `Lat ${latitude.toFixed(3)}, Lng ${longitude.toFixed(3)}`);
               resolve();
             } catch (e) {
               console.warn(e);
               setLocationText(`Lat ${pos.coords.latitude.toFixed(3)}, Lng ${pos.coords.longitude.toFixed(3)}`);
+              setCoordsText(`Latitude: ${pos.coords.latitude.toFixed(6)}, Longitude: ${pos.coords.longitude.toFixed(6)}`);
               resolve();
             }
           },
@@ -145,6 +152,7 @@ export default function Landing() {
       });
     } catch (e: any) {
       setLocationError(e?.message ?? "Failed to detect location");
+      setCoordsText(null);
     } finally {
       setLocating(false);
     }
@@ -241,7 +249,7 @@ export default function Landing() {
                 Sign in
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              {/* Add: Detect location via Google Maps API */}
+              {/* Use Google Maps API + Geolocation; show coordinates like the snippet */}
               <Button
                 size="lg"
                 variant="outline"
@@ -249,8 +257,8 @@ export default function Landing() {
                 onClick={detectLocation}
                 disabled={locating}
                 aria-busy={locating}
-                aria-label="Detect my location"
-                title="Detect my location"
+                aria-label="Get My Location"
+                title="Get My Location"
               >
                 {locating ? (
                   <span className="inline-flex items-center gap-2">
@@ -258,22 +266,29 @@ export default function Landing() {
                     Detecting...
                   </span>
                 ) : (
-                  "Detect my location"
+                  "Get My Location"
                 )}
               </Button>
             </div>
 
-            {/* Add: Location display / error */}
-            {(locationText || locationError) && (
+            {/* Location display / error with coordinates line */}
+            {(locationText || locationError || coordsText) && (
               <div className="mt-4 flex justify-center">
                 <div
-                  className={`text-sm px-3 py-1 rounded-full ${
+                  className={`text-sm px-3 py-2 rounded-full ${
                     locationError
                       ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
                       : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
                   }`}
                 >
-                  {locationError ? locationError : `Detected: ${locationText}`}
+                  {locationError
+                    ? locationError
+                    : [
+                        locationText ? `Detected: ${locationText}` : null,
+                        coordsText ? `(${coordsText})` : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
                 </div>
               </div>
             )}
