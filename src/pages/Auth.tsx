@@ -104,7 +104,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     <div 
       className="min-h-screen flex flex-col relative"
       style={{
-        backgroundImage: "url('./farmer-background.jpg')",
+        backgroundImage: "url('https://harmless-tapir-303.convex.cloud/api/storage/720deea6-d01f-48c7-aaee-3df396617b20')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
