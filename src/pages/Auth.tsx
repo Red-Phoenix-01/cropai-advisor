@@ -104,12 +104,23 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     <div 
       className="min-h-screen flex flex-col relative"
       style={{
-        backgroundImage: "url('https://harmless-tapir-303.convex.cloud/api/storage/720deea6-d01f-48c7-aaee-3df396617b20')",
+        backgroundImage: "none",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
       }}
     >
+      {/* Background image element to ensure it renders across themes */}
+      <img
+        src="https://harmless-tapir-303.convex.cloud/api/storage/720deea6-d01f-48c7-aaee-3df396617b20"
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 -z-10 h-full w-full object-cover"
+        onError={(e) => {
+          // Fallback to bundled asset if remote fails
+          (e.currentTarget as HTMLImageElement).src = "/farmer-background.jpg";
+        }}
+      />
       {/* Overlay for better text readability */}
       <div className="absolute inset-0 bg-black/20"></div>
       

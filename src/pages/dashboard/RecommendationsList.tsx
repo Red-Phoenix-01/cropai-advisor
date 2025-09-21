@@ -19,7 +19,7 @@ export default function RecommendationsList({
   userRecommendations,
   speakText,
 }: {
-  t: { recommendations: string };
+  t: Record<string, string>;
   cropEmojis: Record<string, string>;
   recommendations: Array<Rec> | null;
   userRecommendations: Array<{ recommendedCrops: Array<Rec> }> | undefined;
@@ -31,6 +31,11 @@ export default function RecommendationsList({
     [];
 
   if (!list || list.length === 0) return null;
+
+  // Localized labels with safe English fallbacks
+  const fertilizerLabel = (t as any).fertilizerAdvice ?? "Fertilizer Advice";
+  const irrigationLabel = (t as any).irrigationAdvice ?? "Irrigation Advice";
+  const matchLabel = (t as any).match ?? "match";
 
   return (
     <Card>
@@ -58,7 +63,7 @@ export default function RecommendationsList({
                     </CardTitle>
                   </div>
                   <span className="text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-800">
-                    {(crop.confidence * 100).toFixed(0)}% match
+                    {(crop.confidence * 100).toFixed(0)}% {matchLabel}
                   </span>
                 </div>
               </CardHeader>
@@ -77,11 +82,11 @@ export default function RecommendationsList({
 
                 <div className="space-y-2">
                   <div className="rounded-md bg-green-50 dark:bg-green-900/20 p-3 text-sm">
-                    <span className="font-medium">Fertilizer Advice</span>
+                    <span className="font-medium">{fertilizerLabel}</span>
                     <div className="text-muted-foreground">{crop.fertilizerAdvice}</div>
                   </div>
                   <div className="rounded-md bg-blue-50 dark:bg-blue-900/20 p-3 text-sm">
-                    <span className="font-medium">Irrigation Advice</span>
+                    <span className="font-medium">{irrigationLabel}</span>
                     <div className="text-muted-foreground">{crop.irrigationAdvice}</div>
                   </div>
                 </div>
