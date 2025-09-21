@@ -18,12 +18,14 @@ export default function RecommendationsList({
   recommendations,
   userRecommendations,
   speakText,
+  translateName,
 }: {
   t: Record<string, string>;
   cropEmojis: Record<string, string>;
   recommendations: Array<Rec> | null;
   userRecommendations: Array<{ recommendedCrops: Array<Rec> }> | undefined;
   speakText: (text: string) => void;
+  translateName?: (name: string) => string;
 }) {
   const list: Array<Rec> =
     (recommendations as Array<Rec> | null) ??
@@ -59,7 +61,7 @@ export default function RecommendationsList({
                   <div className="flex items-center gap-2">
                     <CardTitle className="text-lg">
                       <span className="mr-1">{cropEmojis[crop.name] ?? "🌱"}</span>
-                      {crop.name}
+                      {translateName ? translateName(crop.name) : crop.name}
                     </CardTitle>
                   </div>
                   <span className="text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-800">

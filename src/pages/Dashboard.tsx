@@ -71,6 +71,103 @@ const cropEmojis: Record<string, string> = {
   Groundnut: "🥜",
 };
 
+// ADD: localized crop name map
+const cropNameTranslations: Record<string, Record<string, string>> = {
+  en: {
+    Wheat: "Wheat",
+    Rice: "Rice",
+    Maize: "Maize",
+    Soybean: "Soybean",
+    "Pulses (Lentils)": "Pulses (Lentils)",
+    Cotton: "Cotton",
+    Sugarcane: "Sugarcane",
+    Potato: "Potato",
+    Groundnut: "Groundnut",
+  },
+  hi: {
+    Wheat: "गेहूँ",
+    Rice: "चावल",
+    Maize: "मक्का",
+    Soybean: "सोयाबीन",
+    "Pulses (Lentils)": "दालें",
+    Cotton: "कपास",
+    Sugarcane: "गन्ना",
+    Potato: "आलू",
+    Groundnut: "मूंगफली",
+  },
+  ta: {
+    Wheat: "கோதுமை",
+    Rice: "அரிசி",
+    Maize: "சோளம்",
+    Soybean: "சோயா",
+    "Pulses (Lentils)": "பருப்பு",
+    Cotton: "பருத்தி",
+    Sugarcane: "கரும்பு",
+    Potato: "உருளைக்கிழங்கு",
+    Groundnut: "வேர்க்கடலை",
+  },
+  bn: {
+    Wheat: "গম",
+    Rice: "চাল",
+    Maize: "ভুট্টা",
+    Soybean: "সয়াবিন",
+    "Pulses (Lentils)": "ডাল",
+    Cotton: "সুতিবস্ত্র",
+    Sugarcane: "আখ",
+    Potato: "আলু",
+    Groundnut: "চিনাবাদাম",
+  },
+  ur: {
+    Wheat: "گندم",
+    Rice: "چاول",
+    Maize: "مکئی",
+    Soybean: "سویا بین",
+    "Pulses (Lentils)": "دالیں",
+    Cotton: "روئی",
+    Sugarcane: "گنا",
+    Potato: "آلو",
+    Groundnut: "مونگ پھلی",
+  },
+  kn: {
+    Wheat: "ಗೋದಿ",
+    Rice: "ಅಕ್ಕಿ",
+    Maize: "ಜೋಳ",
+    Soybean: "ಸೋಯಾಬಿನ್",
+    "Pulses (Lentils)": "ಬೇಳೆ",
+    Cotton: "ಹತ್ತಿ",
+    Sugarcane: "ಕರಿಬೇವು",
+    Potato: "ಆಲೂಗಡ್ಡೆ",
+    Groundnut: "ಕಡಲೆಕಾಯಿ",
+  },
+  te: {
+    Wheat: "గోధుమ",
+    Rice: "బియ్యం",
+    Maize: "మొక్కజొన్న",
+    Soybean: "సోయాబీన్",
+    "Pulses (Lentils)": "పప్పులు",
+    Cotton: "పత్తి",
+    Sugarcane: "చెరకుగడ్డి",
+    Potato: "బంగాళాదుంప",
+    Groundnut: "వేరుశెనగ",
+  },
+  ml: {
+    Wheat: "ഗോതമ്പ്",
+    Rice: "അരി",
+    Maize: "ചോളം",
+    Soybean: "സോയാബീൻ",
+    "Pulses (Lentils)": "പയർവർഗങ്ങൾ",
+    Cotton: "പത്തി",
+    Sugarcane: "കരിമ്പ്",
+    Potato: "ഉരുളകിഴങ്ങ്",
+    Groundnut: "വേര്‍ക്കടല",
+  },
+};
+
+// helper to translate crop names
+function translateCropName(lang: keyof typeof cropNameTranslations, name: string) {
+  return cropNameTranslations[lang]?.[name] ?? name;
+}
+
 export default function Dashboard() {
   const { isAuthenticated } = useAuth();
   type Language = "en" | "hi" | "ta" | "bn" | "ur" | "kn" | "te" | "ml";
@@ -411,6 +508,21 @@ export default function Dashboard() {
         const status = await navigator.permissions.query({ name: "geolocation" });
         if (status.state === "denied") {
           toast.error("Location permission denied. Please allow location access in browser settings.");
+          // Fallback to IP-based location when permission is denied
+          try {
+            const resp = await fetch("https://ipapi.co/json");
+            if (resp.ok) {
+              const j = await resp.json();
+              const pretty = [j.city, j.region].filter(Boolean).join(", ");
+              setFormData((prev) => ({ ...prev, location: pretty }));
+              setWeatherData(deriveWeatherFromLocation(pretty));
+              toast.success("Approximate location detected from IP.");
+            } else {
+              toast.message("Unable to fetch approximate location.");
+            }
+          } catch {
+            // ignore
+          }
           setIsLocating(false);
           return;
         }
@@ -450,14 +562,41 @@ export default function Dashboard() {
             toast.success("Location detected successfully!");
             setIsLocating(false);
           },
-          () => {
-            toast.error("Unable to get location automatically. Please enter location manually.");
+          async () => {
+            // On error: try IP-based approximate location
+            try {
+              const resp = await fetch("https://ipapi.co/json");
+              if (resp.ok) {
+                const j = await resp.json();
+                const pretty = [j.city, j.region].filter(Boolean).join(", ");
+                setFormData((prev) => ({ ...prev, location: pretty }));
+                setWeatherData(deriveWeatherFromLocation(pretty));
+                toast.success("Approximate location detected from IP.");
+              } else {
+                toast.error("Unable to get location automatically. Please enter location manually.");
+              }
+            } catch {
+              toast.error("Unable to get location automatically. Please enter location manually.");
+            }
             setIsLocating(false);
           },
           { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 },
         );
       } else {
         toast.error("Geolocation not supported by this browser.");
+        // Fallback attempt via IP
+        try {
+          const resp = await fetch("https://ipapi.co/json");
+          if (resp.ok) {
+            const j = await resp.json();
+            const pretty = [j.city, j.region].filter(Boolean).join(", ");
+            setFormData((prev) => ({ ...prev, location: pretty }));
+            setWeatherData(deriveWeatherFromLocation(pretty));
+            toast.success("Approximate location detected from IP.");
+          }
+        } catch {
+          // ignore
+        }
         setIsLocating(false);
       }
     } catch {
@@ -805,6 +944,7 @@ export default function Dashboard() {
               recommendations={recommendations}
               userRecommendations={userRecommendations}
               speakText={speakText}
+              translateName={(name) => translateCropName(language, name)}
             />
           </motion.div>
         )}
