@@ -112,7 +112,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     >
       {/* Background image element to ensure it renders across themes */}
       <img
-        src="https://harmless-tapir-303.convex.cloud/api/storage/720deea6-d01f-48c7-aaee-3df396617b20"
+        src="https://harmless-tapir-303.convex.cloud/api/storage/a4cc9365-1b82-4176-ac42-d17d59e7394f"
         alt=""
         aria-hidden="true"
         className="absolute inset-0 -z-10 h-full w-full object-cover"
