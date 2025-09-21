@@ -97,11 +97,20 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-
+    <div className="min-h-screen flex flex-col relative overflow-hidden">
+      {/* Background image */}
+      <img
+        src="https://harmless-tapir-303.convex.cloud/api/storage/ceaf19ae-50d9-4076-9a1d-bd2aa97fc0a5"
+        alt="Farmer plowing field under monsoon clouds"
+        className="absolute inset-0 h-full w-full object-cover"
+        aria-hidden="true"
+      />
+      {/* Dark overlay for readability */}
+      <div className="absolute inset-0 bg-black/50" aria-hidden="true" />
+ 
       
       {/* Auth Content */}
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center relative z-10">
         <div className="flex items-center justify-center h-full flex-col">
         <Card className="min-w-[350px] pb-0 border shadow-md">
           {step === "signIn" ? (
