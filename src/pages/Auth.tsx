@@ -111,7 +111,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       }}
     >
       {/* Overlay for better text readability */}
-      <div className="absolute inset-0 bg-black/20"></div>
+      <div className="absolute inset-0 bg-black/30"></div>
       
       {/* Auth Content */}
       <div className="flex-1 flex items-center justify-center relative z-10">
