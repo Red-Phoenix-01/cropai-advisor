@@ -27,6 +27,66 @@ import WeatherCard from "./dashboard/WeatherCard";
 import MarketPricesCard from "./dashboard/MarketPricesCard";
 import RecommendationsList from "./dashboard/RecommendationsList";
 
+// Add: minimal translations used across Dashboard/children
+const translations = {
+  en: {
+    recommendations: "Recommendations",
+    marketPrices: "Market Prices",
+    fertilizerAdvice: "Fertilizer Advice",
+    irrigationAdvice: "Irrigation Advice",
+    match: "match",
+  },
+  hi: {
+    recommendations: "सिफारिशें",
+    marketPrices: "बाज़ार भाव",
+    fertilizerAdvice: "उर्वरक सलाह",
+    irrigationAdvice: "सिंचाई सलाह",
+    match: "मिलान",
+  },
+  ta: {
+    recommendations: "பரிந்துரைகள்",
+    marketPrices: "சந்தை விலை",
+    fertilizerAdvice: "உர ஆலோசனை",
+    irrigationAdvice: "நீர்ப்பாசன ஆலோசனை",
+    match: "பொருந்துதல்",
+  },
+  bn: {
+    recommendations: "প্রস্তাবনা",
+    marketPrices: "বাজার দর",
+    fertilizerAdvice: "সার পরামর্শ",
+    irrigationAdvice: "সেচ পরামর্শ",
+    match: "মিল",
+  },
+  ur: {
+    recommendations: "سفارشات",
+    marketPrices: "بازار کی قیمتیں",
+    fertilizerAdvice: "کھاد مشورہ",
+    irrigationAdvice: "آبپاشی مشورہ",
+    match: "میل",
+  },
+  kn: {
+    recommendations: "ಶಿಫಾರಸುಗಳು",
+    marketPrices: "ಬಜಾರ್ ಬೆಲೆಗಳು",
+    fertilizerAdvice: "ರಸಗೊಬ್ಬರ ಸಲಹೆ",
+    irrigationAdvice: "ನೀರಾವರಿ ಸಲಹೆ",
+    match: "ಹೊಂದಿಕೆ",
+  },
+  te: {
+    recommendations: "సిఫార్సులు",
+    marketPrices: "మార్కెట్ ధరలు",
+    fertilizerAdvice: "ఎరువు సలహా",
+    irrigationAdvice: "నీరుపూర్వక సలహా",
+    match: "జోడు",
+  },
+  ml: {
+    recommendations: "പരാമർശങ്ങൾ",
+    marketPrices: "ചന്ത വിലകൾ",
+    fertilizerAdvice: "എരുവ് ഉപദേശം",
+    irrigationAdvice: "ജലസേചന ഉപദേശം",
+    match: "പൊരുത്തം",
+  },
+} as const;
+
 function deriveWeatherFromLocation(loc: string): { temperature: number; humidity: number; rainfall: number; forecast: string; localTime: string } {
   // Fallback if API fails; keep lightweight variability by hash
   let hash = 0;
@@ -328,6 +388,9 @@ export default function Dashboard() {
   const { isAuthenticated } = useAuth();
   type Language = "en" | "hi" | "ta" | "bn" | "ur" | "kn" | "te" | "ml";
 
+  // Add: missing language state so handlers compile and work
+  const [language, setLanguage] = useState<Language>("en");
+
   // Add: supported languages list and safe language change handler
   const supportedLanguages: Array<Language> = ["en", "hi", "ta", "bn", "ur", "kn", "te", "ml"];
   const handleLanguageChange = (val: string) => {
@@ -342,8 +405,6 @@ export default function Dashboard() {
     }
     setLanguage(val as Language);
   };
-
-  // ... keep existing code (useAuth, type Language, useState hooks, etc.)
 
   // Ensure translations object is safely accessed with fallback
   const t = translations[language] ?? translations.en;
@@ -361,8 +422,6 @@ export default function Dashboard() {
   useEffect(() => {
     (window as any).__cropai_lang = language;
   }, [language]);
-
-  // ... keep existing code (getCurrentLocation, speech recognition, speakText, handleSubmit, auth guard)
 
   return (
     <div className={`min-h-screen bg-background transition-colors duration-300`}>

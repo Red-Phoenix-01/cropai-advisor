@@ -13,11 +13,17 @@ import {
   Globe
 } from "lucide-react";
 import { useNavigate } from "react-router";
+import { useState } from "react";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 
 export default function Landing() {
   const { isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
+
+  // Add: location detection state
+  const [locating, setLocating] = useState(false);
+  const [locationText, setLocationText] = useState<string | null>(null);
+  const [locationError, setLocationError] = useState<string | null>(null);
 
   const cropEmojis: Record<string, string> = {
     Rice: "🌾",
@@ -75,6 +81,74 @@ export default function Landing() {
     { number: "95%", label: "Accuracy Rate" },
     { number: "24/7", label: "Support" }
   ];
+
+  // Add: Reverse geocode using Google Maps Geocoding API
+  async function reverseGeocode(lat: number, lng: number): Promise<string | null> {
+    const key = (import.meta as any).env?.VITE_GOOGLE_MAPS_API_KEY as string | undefined;
+    if (!key) {
+      console.warn("VITE_GOOGLE_MAPS_API_KEY not set; skipping reverse geocoding.");
+      return null;
+    }
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${encodeURIComponent(
+      `${lat},${lng}`
+    )}&key=${encodeURIComponent(key)}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Failed to reach Google Geocoding API");
+    const data = await res.json();
+    if (data.status !== "OK" || !Array.isArray(data.results) || data.results.length === 0) {
+      return null;
+    }
+
+    // Try to extract city (locality) and state (administrative_area_level_1)
+    const components: Array<any> = data.results[0].address_components ?? [];
+    let city: string | null = null;
+    let state: string | null = null;
+
+    for (const c of components) {
+      const types: Array<string> = c.types ?? [];
+      if (types.includes("locality")) city = c.long_name;
+      if (types.includes("administrative_area_level_1")) state = c.long_name;
+    }
+
+    if (city && state) return `${city}, ${state}`;
+    if (state) return state;
+    return data.results[0].formatted_address ?? null;
+  }
+
+  // Add: Detect location handler
+  async function detectLocation() {
+    setLocating(true);
+    setLocationError(null);
+    try {
+      if (!("geolocation" in navigator)) {
+        throw new Error("Geolocation not supported");
+      }
+      await new Promise<void>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+          async (pos) => {
+            try {
+              const { latitude, longitude } = pos.coords;
+              const pretty = await reverseGeocode(latitude, longitude);
+              setLocationText(pretty ?? `Lat ${latitude.toFixed(3)}, Lng ${longitude.toFixed(3)}`);
+              resolve();
+            } catch (e) {
+              console.warn(e);
+              setLocationText(`Lat ${pos.coords.latitude.toFixed(3)}, Lng ${pos.coords.longitude.toFixed(3)}`);
+              resolve();
+            }
+          },
+          (err) => {
+            reject(new Error(err.message || "Unable to get location"));
+          },
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+      });
+    } catch (e: any) {
+      setLocationError(e?.message ?? "Failed to detect location");
+    } finally {
+      setLocating(false);
+    }
+  }
 
   if (isLoading) {
     return (
@@ -167,7 +241,42 @@ export default function Landing() {
                 Sign in
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
+              {/* Add: Detect location via Google Maps API */}
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-lg px-8 py-6"
+                onClick={detectLocation}
+                disabled={locating}
+                aria-busy={locating}
+                aria-label="Detect my location"
+                title="Detect my location"
+              >
+                {locating ? (
+                  <span className="inline-flex items-center gap-2">
+                    <span className="h-4 w-4 rounded-full border-2 border-green-600 border-t-transparent animate-spin" />
+                    Detecting...
+                  </span>
+                ) : (
+                  "Detect my location"
+                )}
+              </Button>
             </div>
+
+            {/* Add: Location display / error */}
+            {(locationText || locationError) && (
+              <div className="mt-4 flex justify-center">
+                <div
+                  className={`text-sm px-3 py-1 rounded-full ${
+                    locationError
+                      ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
+                      : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
+                  }`}
+                >
+                  {locationError ? locationError : `Detected: ${locationText}`}
+                </div>
+              </div>
+            )}
           </motion.div>
 
           {/* Hero Image/Animation */}
