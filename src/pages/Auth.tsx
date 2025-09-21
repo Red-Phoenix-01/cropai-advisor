@@ -101,13 +101,22 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-
+    <div 
+      className="min-h-screen flex flex-col relative"
+      style={{
+        backgroundImage: "url('./farmer-background.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      {/* Overlay for better text readability */}
+      <div className="absolute inset-0 bg-black/20"></div>
       
       {/* Auth Content */}
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center relative z-10">
         <div className="flex items-center justify-center h-full flex-col">
-        <Card className="w-full max-w-sm pb-0 border shadow-md">
+        <Card className="w-full max-w-sm pb-0 border shadow-lg bg-white/95 backdrop-blur-sm">
           {step === "signIn" ? (
             <>
               <CardHeader className="text-center">
