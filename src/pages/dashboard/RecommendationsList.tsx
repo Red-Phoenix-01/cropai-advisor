@@ -2,6 +2,100 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Droplets, Leaf, Volume2 } from "lucide-react";
 
+type Lang = "en" | "hi" | "ta" | "bn" | "ur" | "kn" | "te" | "ml";
+
+// Local fallback translations for crop names if no translator is passed from parent
+const localCropNameTranslations: Record<Lang, Record<string, string>> = {
+  en: {
+    Wheat: "Wheat",
+    Rice: "Rice",
+    Maize: "Maize",
+    Soybean: "Soybean",
+    "Pulses (Lentils)": "Pulses (Lentils)",
+    Cotton: "Cotton",
+    Sugarcane: "Sugarcane",
+    Potato: "Potato",
+    Groundnut: "Groundnut",
+  },
+  hi: {
+    Wheat: "गेहूँ",
+    Rice: "चावल",
+    Maize: "मक्का",
+    Soybean: "सोयाबीन",
+    "Pulses (Lentils)": "दालें",
+    Cotton: "कपास",
+    Sugarcane: "गन्ना",
+    Potato: "आलू",
+    Groundnut: "मूंगफली",
+  },
+  ta: {
+    Wheat: "கோதுமை",
+    Rice: "அரிசி",
+    Maize: "சோளம்",
+    Soybean: "சோயா",
+    "Pulses (Lentils)": "பருப்பு",
+    Cotton: "பருத்தி",
+    Sugarcane: "கரும்பு",
+    Potato: "உருளைக்கிழங்கு",
+    Groundnut: "வேர்க்கடலை",
+  },
+  bn: {
+    Wheat: "গম",
+    Rice: "চাল",
+    Maize: "ভুট্টা",
+    Soybean: "সয়াবিন",
+    "Pulses (Lentils)": "ডাল",
+    Cotton: "সুতিবস্ত্র",
+    Sugarcane: "আখ",
+    Potato: "আলু",
+    Groundnut: "চিনাবাদাম",
+  },
+  ur: {
+    Wheat: "گندم",
+    Rice: "چاول",
+    Maize: "مکئی",
+    Soybean: "سویا بین",
+    "Pulses (Lentils)": "دالیں",
+    Cotton: "روئی",
+    Sugarcane: "گنا",
+    Potato: "آلو",
+    Groundnut: "مونگ پھلی",
+  },
+  kn: {
+    Wheat: "ಗೋದಿ",
+    Rice: "ಅಕ್ಕಿ",
+    Maize: "ಜೋಳ",
+    Soybean: "ಸೋಯಾಬಿನ್",
+    "Pulses (Lentils)": "ಬೇಳೆ",
+    Cotton: "ಹತ್ತಿ",
+    Sugarcane: "ಕಬ್ಬು",
+    Potato: "ಆಲೂಗಡ್ಡೆ",
+    Groundnut: "ಕಡಲೆಕಾಯಿ",
+  },
+  te: {
+    Wheat: "గోధుమ",
+    Rice: "బియ్యం",
+    Maize: "మొక్కజొన్న",
+    Soybean: "సోయాబీన్",
+    "Pulses (Lentils)": "పప్పులు",
+    Cotton: "పత్తి",
+    Sugarcane: "చెరకు",
+    Potato: "బంగాళాదుంప",
+    Groundnut: "వేరుశెనగ",
+  },
+  ml: {
+    Wheat: "ഗോതമ്പ്",
+    Rice: "അരി",
+    Maize: "ചോളം",
+    Soybean: "സോയാബീൻ",
+    "Pulses (Lentils)": "പയർവർഗങ്ങൾ",
+    Cotton: "പത്തി",
+    Sugarcane: "കരിമ്പ്",
+    Potato: "ഉരുളകിഴങ്ങ്",
+    Groundnut: "വേര്‍ക്കടല",
+  },
+};
+
 type Rec = {
   name: string;
   confidence: number;
@@ -71,6 +165,12 @@ export default function RecommendationsList({
                 irrigationAdvice: crop.irrigationAdvice,
               };
 
+            // Add: fallback name translation if parent didn't pass translateName
+            const lang = ((typeof window !== "undefined" && (window as any).__cropai_lang) || "en") as Lang;
+            const displayName =
+              (translateName ? translateName(crop.name) : localCropNameTranslations[lang]?.[crop.name]) ??
+              crop.name;
+
             return (
               <Card key={index} className="border-2 hover:border-green-400/60 transition-colors">
                 <CardHeader className="pb-3">
@@ -78,7 +178,7 @@ export default function RecommendationsList({
                     <div className="flex items-center gap-2">
                       <CardTitle className="text-lg">
                         <span className="mr-1">{cropEmojis[crop.name] ?? "🌱"}</span>
-                        {translateName ? translateName(crop.name) : crop.name}
+                        {displayName}
                       </CardTitle>
                     </div>
                     <span className="text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-800">
