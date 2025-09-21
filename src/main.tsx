@@ -6,7 +6,7 @@ import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexReactClient } from "convex/react";
 import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router";
+import { createBrowserRouter, RouterProvider, Outlet, useLocation } from "react-router";
 import "./index.css";
 import Landing from "./pages/Landing.tsx";
 import NotFound from "./pages/NotFound.tsx";
@@ -73,29 +73,43 @@ function ThemeToggle() {
   );
 }
 
+function Root() {
+  return (
+    <>
+      <RouteSyncer />
+      {/* Global Dark Mode Toggle on every route */}
+      <ThemeToggle />
+      <Outlet />
+      {/* Global footer */}
+      <footer className="mt-10 border-t">
+        <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
+          Made with ❤️ for Indian Farmers
+        </div>
+      </footer>
+    </>
+  );
+}
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Root />,
+    children: [
+      { index: true, element: <Landing /> },
+      { path: "auth", element: <AuthPage redirectAfterAuth="/dashboard" /> },
+      { path: "dashboard", element: <Dashboard /> },
+      { path: "connect", element: <ConnectPage /> },
+      { path: "news", element: <NewsPage /> },
+      { path: "*", element: <NotFound /> },
+    ],
+  },
+]);
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <InstrumentationProvider>
       <ConvexAuthProvider client={convex}>
-        <BrowserRouter>
-          <RouteSyncer />
-          {/* Global Dark Mode Toggle on every route */}
-          <ThemeToggle />
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/auth" element={<AuthPage redirectAfterAuth="/dashboard" />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/connect" element={<ConnectPage />} />
-            <Route path="/news" element={<NewsPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          {/* Global footer */}
-          <footer className="mt-10 border-t">
-            <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
-              Made with ❤️ for Indian Farmers
-            </div>
-          </footer>
-        </BrowserRouter>
+        <RouterProvider router={router} />
         <Toaster />
       </ConvexAuthProvider>
     </InstrumentationProvider>
