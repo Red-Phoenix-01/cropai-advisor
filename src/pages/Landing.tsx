@@ -65,7 +65,7 @@ export default function Landing() {
     {
       icon: <Globe className="h-8 w-8 text-teal-600" />,
       title: "Multilingual",
-      description: "Available in English and Hindi for better accessibility"
+      description: "Available in 8 languages: English, Hindi, Tamil, Bengali, Urdu, Kannada, Telugu, Malayalam"
     }
   ];
 
@@ -100,7 +100,25 @@ export default function Landing() {
               </div>
             </div>
             
-            <div className="mt-1 pr-32 md:pr-48" />
+            <div className="flex items-center gap-3 mt-1 pr-32 md:pr-48">
+              <Button 
+                size="sm" 
+                className="rounded-full"
+                onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
+              >
+                {isAuthenticated ? "Free Trial" : "Start free Trial ->"}
+              </Button>
+              <Button
+                size="sm"
+                className="bg-green-700 hover:bg-green-800 text-white border-0 rounded-full"
+                onClick={() => navigate("/auth")}
+                aria-label="Sign in"
+                title="Sign in"
+              >
+                Sign in
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </nav>
