@@ -15,8 +15,6 @@ import ConnectPage from "./pages/Connect.tsx";
 import NewsPage from "./pages/News.tsx";
 import { Moon, Sun } from "lucide-react";
 
-const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
-
 function RouteSyncer() {
   const location = useLocation();
   useEffect(() => {
@@ -105,13 +103,35 @@ const router = createBrowserRouter([
   },
 ]);
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+function App() {
+  const convexUrl = (import.meta as any).env?.VITE_CONVEX_URL as string | undefined;
+
+  if (!convexUrl) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6">
+        <div className="max-w-md text-center">
+          <h1 className="text-xl font-semibold mb-2">Missing configuration</h1>
+          <p className="text-muted-foreground">
+            Please set the VITE_CONVEX_URL environment variable in the API keys tab to load the app.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const convex = new ConvexReactClient(convexUrl);
+  return (
     <InstrumentationProvider>
       <ConvexAuthProvider client={convex}>
         <RouterProvider router={router} />
         <Toaster />
       </ConvexAuthProvider>
     </InstrumentationProvider>
+  );
+}
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <App />
   </StrictMode>,
 );
