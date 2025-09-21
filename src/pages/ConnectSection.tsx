@@ -57,6 +57,12 @@ function inferStateClient(location: string | undefined | null): string | null {
     faridabad: "haryana",
     guwahati: "assam",
     ranchi: "jharkhand",
+    mumbai: "maharashtra",
+    pune: "maharashtra",
+    nagpur: "maharashtra",
+    jaipur: "rajasthan",
+    jodhpur: "rajasthan",
+    udaipur: "rajasthan",
   };
   for (const [city, state] of Object.entries(map)) if (loc.includes(city)) return state;
   const states = [
