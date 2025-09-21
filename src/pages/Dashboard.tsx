@@ -168,6 +168,184 @@ function translateCropName(lang: keyof typeof cropNameTranslations, name: string
   return cropNameTranslations[lang]?.[name] ?? name;
 }
 
+// Add: per-crop content translations and helper
+const cropContentTranslations: Record<
+  keyof typeof cropNameTranslations,
+  Record<
+    string,
+    {
+      explanation?: string;
+      fertilizerAdvice?: string;
+      irrigationAdvice?: string;
+    }
+  >
+> = {
+  en: {}, // English shows originals
+  hi: {
+    Wheat: {
+      explanation: "गेहूँ मध्यम नाइट्रोजन और संतुलित pH में अच्छा बढ़ता है।",
+      fertilizerAdvice: "संतुलित NPK उर्वरक दें। बुवाई के समय DAP का उपयोग करें।",
+      irrigationAdvice: "क्राउन रूट और दाना भरने के चरणों में सिंचाई करें।",
+    },
+    Rice: {
+      explanation: "चावल नाइट्रोजन-समृद्ध व अच्छी जल उपलब्धता वाली स्थितियों में पनपता है।",
+      fertilizerAdvice: "जैविक खाद और बायो-फर्टिलाइज़र का उपयोग करें। 4:2:1 NPK दें।",
+      irrigationAdvice: "विकास के दौरान 2-5 सेमी पानी बनाए रखें।",
+    },
+    Maize: {
+      explanation: "मकई को अच्छा फास्फोरस और संतुलित pH चाहिए।",
+      fertilizerAdvice: "वनस्पति वृद्धि में उच्च नाइट्रोजन दें।",
+      irrigationAdvice: "महत्वपूर्ण चरणों में नियमित सिंचाई करें।",
+    },
+    "Pulses (Lentils)": {
+      explanation: "दालें अपना नाइट्रोजन स्वयं ठीक करती हैं और तटस्थ pH पसंद करती हैं।",
+      fertilizerAdvice: "कम नाइट्रोजन, पोटाश और फॉस्फोरस पर ध्यान दें।",
+      irrigationAdvice: "फूल और फली बनने पर हल्की सिंचाई रखें।",
+    },
+    Soybean: {
+      explanation: "सोयाबीन अच्छे जल-निकास वाली मिट्टी में बढ़ती है।",
+      fertilizerAdvice: "कम नाइट्रोजन, मध्यम फॉस्फोरस और पोटाश।",
+      irrigationAdvice: "फूल और फली बनने पर पानी महत्वपूर्ण है।",
+    },
+    Cotton: {
+      explanation: "कपास को रेशों के लिए अधिक पोटाश और पर्याप्त पानी चाहिए।",
+      fertilizerAdvice: "बोल विकास के समय पोटाश-समृद्ध उर्वरक दें।",
+      irrigationAdvice: "उच्च (700–1300mm) जल की आवश्यकता।",
+    },
+    Sugarcane: {
+      explanation: "गन्ना दीर्घ अवधि की फसल है; उच्च जल और पोषक तत्वों की जरूरत।",
+      fertilizerAdvice: "NPK का संतुलित अनुपात, जैविक खाद जोड़ें।",
+      irrigationAdvice: "नियमित फरो सिंचाई रखें।",
+    },
+    Potato: {
+      explanation: "आलू ठंडे मौसम और अच्छे जल-निकास वाली मिट्टी में बढ़ता है।",
+      fertilizerAdvice: "रोपण के समय NPK और बाद में टॉप ड्रेसिंग।",
+      irrigationAdvice: "कंद बनने पर नमी बनाए रखें।",
+    },
+    Groundnut: {
+      explanation: "मूंगफली रेतीली दोमट और गर्म परिस्थितियों में अनुकूल।",
+      fertilizerAdvice: "जिप्सम और पोटाश दें; नाइट्रोजन सीमित रखें।",
+      irrigationAdvice: "फूल और पॉड भरने पर समान नमी रखें।",
+    },
+  },
+  ta: {
+    Wheat: {
+      explanation: "கோதுமை மிதமான நைட்ரஜன் மற்றும் சமநிலை pH இல் நன்றாக வளரும்.",
+      fertilizerAdvice: "சமநிலை NPK உரம். விதைப்பில் DAP பயன்பாடு.",
+      irrigationAdvice: "முக்கிய வளர்ச்சி கட்டங்களில் பாசனம் செய்யவும்.",
+    },
+    Rice: {
+      explanation: "அரிசி நைட்ரஜன் நிறைந்த, நீர் கிடைக்கும் சூழலில் சிறப்பாக வளரும்.",
+      fertilizerAdvice: "ஜெயவ உரம் மற்றும் 4:2:1 NPK அளிக்கவும்.",
+      irrigationAdvice: "வளர்ச்சிக் காலம் முழுவதும் 2–5செ.மீ நீர் வைத்திருங்கள்.",
+    },
+    Maize: {
+      explanation: "சோளம் நல்ல பாஸ்பரஸ் மற்றும் சமநிலை pH தேவைப்படுகிறது.",
+      fertilizerAdvice: "செடிவளர்ச்சி கட்டத்தில் அதிக நைட்ரஜன் உரம்.",
+      irrigationAdvice: "தவறாது பாசனம் செய்யவும்.",
+    },
+    "Pulses (Lentils)": {
+      explanation: "பருப்புகள் தாங்களே நைட்ரஜன் நிலைநிறுத்தும்; நடுத்தர pH விரும்பும்.",
+      fertilizerAdvice: "குறைந்த நைட்ரஜன்; பாஸ்பரஸ்/பொட்டாசில் கவனம்.",
+      irrigationAdvice: "மலர்ச்சி மற்றும் கொட்டைகள் உருவாகும் போது லேசான பாசனம்.",
+    },
+    Soybean: {
+      explanation: "சோயா நல்ல வடிகால் உள்ள மண்ணில் வளரும்.",
+      fertilizerAdvice: "குறைந்த N, மிதமான P மற்றும் K.",
+      irrigationAdvice: "மலர்ச்சி/பாட் நிரப்பு நேரத்தில் தண்ணீர் அவசியம்.",
+    },
+    Cotton: {
+      explanation: "பருத்தி நாரிற்காக அதிக பொட்டாசும் போதிய நீரும் தேவை.",
+      fertilizerAdvice: "போல் வளர்ச்சியில் K-பெருமளவு உரம்.",
+      irrigationAdvice: "உயர் (700–1300மி.மீ) நீர் தேவை.",
+    },
+    Sugarcane: {
+      explanation: "கரும்பு நீண்டகால பயிர்; அதிக நீர்/உட்டச்சத்து தேவை.",
+      fertilizerAdvice: "சமநிலை NPK, இயற்கை உரம் சேர்க்கவும்.",
+      irrigationAdvice: "வரிசை பாசனம் சீராக செய்யவும்.",
+    },
+    Potato: {
+      explanation: "உருளைக்கிழங்கு குளிர்ந்த வானிலை மற்றும் வடிகால் மண்ணில் வளரும்.",
+      fertilizerAdvice: "நட்டு நேரம் NPK, பின்னர் டாப் டிரசிங்.",
+      irrigationAdvice: "கிழங்கு உருவாகும் போது ஈரப்பதம் வைத்திருங்கள்.",
+    },
+    Groundnut: {
+      explanation: "வேர்க்கடலை மணல்வகை மண் மற்றும் சூடான நிலை விரும்பும்.",
+      fertilizerAdvice: "ஜிப்சம், பொட்டாசு; நைட்ரஜன் குறைவு.",
+      irrigationAdvice: "மலர்ச்சி/கொட்டை நிரப்பு நேரத்தில் ஈரப்பதம் நிலைநிறுத்தவும்.",
+    },
+  },
+  bn: {
+    Wheat: { explanation: "গম মাঝারি নাইট্রোজেন ও সমতুল্য pH এ ভালো বাড়ে।", fertilizerAdvice: "সামঞ্জস্যপূর্ণ NPK দিন, বপনের সময় DAP।", irrigationAdvice: "গুরুত্বপূর্ণ পর্যায়ে সেচ দিন।" },
+    Rice: { explanation: "চাল নাইট্রোজেনসমৃদ্ধ ও জলে ভেজা অবস্থায় ভালো বাড়ে।", fertilizerAdvice: "জৈব সার ও 4:2:1 NPK ব্যবহার করুন।", irrigationAdvice: "মৌসুমজুড়ে ২–৫ সেমি জল রাখুন।" },
+    Maize: { explanation: "ভুট্টায় ভালো ফসফরাস ও সমতুল্য pH দরকার।", fertilizerAdvice: "সবুজ বৃদ্ধিতে বেশি নাইট্রোজেন দিন।", irrigationAdvice: "নিয়মিত সেচ দিন।" },
+    "Pulses (Lentils)": { explanation: "ডাল নিজে নাইট্রোজেন স্থির করে; নিরপেক্ষ pH পছন্দ।", fertilizerAdvice: "কম নাইট্রোজেন; পটাশ ও ফসফরাসে ফোকাস।", irrigationAdvice: "ফুল ও শুঁটি ভরার সময় হালকা সেচ।" },
+    Soybean: { explanation: "সয়াবিন ভাল ড্রেনেজযুক্ত মাটিতে বাড়ে।", fertilizerAdvice: "কম N, মাঝারি P ও K।", irrigationAdvice: "ফুল ও শুঁটি ভরার সময় জল জরুরি।" },
+    Cotton: { explanation: "সুতির জন্য উচ্চ পটাশ ও যথেষ্ট জল দরকার।", fertilizerAdvice: "বল গঠনে পটাশ সমৃদ্ধ সার দিন।", irrigationAdvice: "উচ্চ (700–1300মিমি) জলের প্রয়োজন।" },
+    Sugarcane: { explanation: "আখ দীর্ঘমেয়াদি ফসল; বেশি জল ও পুষ্টি দরকার।", fertilizerAdvice: "সামঞ্জস্যপূর্ণ NPK, জৈব সার যোগ করুন।", irrigationAdvice: "নিয়মিত নালা সেচ বজায় রাখুন।" },
+    Potato: { explanation: "আলু ঠান্ডা আবহাওয়া ও ভাল ড্রেনেজে ভালো।", fertilizerAdvice: "রোপণের সময় NPK, পরে টপ ড্রেসিং।", irrigationAdvice: "কন্দ গঠনে আর্দ্রতা বজায় রাখুন।" },
+    Groundnut: { explanation: "চিনাবাদাম বেলে দোআঁশ ও গরম আবহাওয়া পছন্দ করে।", fertilizerAdvice: "জিপসাম ও পটাশ; নাইট্রোজেন সীমিত।", irrigationAdvice: "ফুল ও ফল ভরার সময় সমান আর্দ্রতা।" },
+  },
+  ur: {
+    Wheat: { explanation: "گندم معتدل نائٹروجن اور متوازن pH میں اچھی بڑھتی ہے۔", fertilizerAdvice: "متوازن NPK دیں، بوائی پر DAP۔", irrigationAdvice: "اہم مراحل پر آبپاشی کریں۔" },
+    Rice: { explanation: "چاول نائٹروجن سے بھرپور اور پانی والی حالت میں پھلتا ہے۔", fertilizerAdvice: "نامیاتی کھاد اور 4:2:1 NPK استعمال کریں۔", irrigationAdvice: "موسم بھر 2–5 سم پانی برقرار رکھیں۔" },
+    Maize: { explanation: "مکئی کو اچھا فاسفورس اور متوازن pH درکار ہے۔", fertilizerAdvice: "سبز بڑھوتری میں زیادہ نائٹروجن دیں۔", irrigationAdvice: "باقاعدہ آبپاشی کریں۔" },
+    "Pulses (Lentils)": { explanation: "دالیں خود نائٹروجن ٹھیک کرتی ہیں؛ معتدل pH پسند کرتی ہیں۔", fertilizerAdvice: "کم نائٹروجن؛ پوٹاش اور فاسفورس پر زور۔", irrigationAdvice: "پھول اور پھلی بننے پر ہلکی آبپاشی۔" },
+    Soybean: { explanation: "سویا بین اچھی نکاسی والی مٹی میں اگتی ہے۔", fertilizerAdvice: "کم N، درمیانی P اور K۔", irrigationAdvice: "پھول اور پھلی کے دوران پانی ضروری۔" },
+    Cotton: { explanation: "روئی کے لیے زیادہ پوٹاش اور مناسب پانی درکار ہے۔", fertilizerAdvice: "بول ڈیولپمنٹ میں پوٹاش سے بھرپور کھاد۔", irrigationAdvice: "زیادہ (700–1300mm) پانی درکار۔" },
+    Sugarcane: { explanation: "گنا طویل دورانیہ کی فصل ہے؛ زیادہ پانی و غذائیت چاہیے۔", fertilizerAdvice: "متوازن NPK، نامیاتی کھاد شامل کریں۔", irrigationAdvice: "نالی آبپاشی باقاعدگی سے رکھیں۔" },
+    Potato: { explanation: "آلو ٹھنڈے موسم اور اچھی نکاسی میں بہتر۔", fertilizerAdvice: "پودے لگاتے وقت NPK اور بعد میں ٹاپ ڈریسنگ۔", irrigationAdvice: "کلب بننے پر نمی برقرار رکھیں۔" },
+    Groundnut: { explanation: "مونگ پھلی ریتلی دوامی مٹی اور گرم حالات پسند کرتی ہے۔", fertilizerAdvice: "جپسَم اور پوٹاش؛ نائٹروجن محدود رکھیں۔", irrigationAdvice: "پھول اور پوڈ فلنگ پر یکساں نمی۔" },
+  },
+  kn: {
+    Wheat: { explanation: "ಗೋದಿ ಮಧ್ಯಮ ನೈಟ್ರೋಜನ್ ಮತ್ತು ಸಮ pH ನಲ್ಲಿ ಚೆನ್ನಾಗಿ ಬೆಳೆಯುತ್ತದೆ.", fertilizerAdvice: "ಸಮತೋಲನ NPK; ಬಿತ್ತನೆಗೆ DAP.", irrigationAdvice: "ಮುಖ್ಯ ಹಂತಗಳಲ್ಲಿ ನೀರಾವರಿ ಮಾಡಿ." },
+    Rice: { explanation: "ಅಕ್ಕಿ ನೈಟ್ರೋಜನ್ ಸಮೃದ್ಧ, ನೀರು ಲಭ್ಯ ಪರಿಸರದಲ್ಲಿ ಚೆನ್ನಾಗಿ ಬೆಳೆಯುತ್ತದೆ.", fertilizerAdvice: "ಸಾವಯವ ಗೊಬ್ಬರ ಹಾಗೂ 4:2:1 NPK.", irrigationAdvice: "ಬೆಳೆಯಾದರಿಂದು 2–5ಸೆ.ಮೀ ನೀರು ಇರಲಿ." },
+    Maize: { explanation: "ಜೋಳಕ್ಕೆ ಉತ್ತಮ ಫಾಸ್ಫರಸ್ ಮತ್ತು ಸಮ pH ಬೇಕು.", fertilizerAdvice: "ಊಟದ ಬೆಳವಣಿಗೆಯಲ್ಲಿ ಹೆಚ್ಚು N.", irrigationAdvice: "ನಿಯಮಿತ ನೀರಾವರಿ.", },
+    "Pulses (Lentils)": { explanation: "ಬೇಳೆಗಳು ಸ್ವಯಂ ನೈಟ್ರೋಜನ್ ನಿಶ್ಚಲಗೊಳಿಸುತ್ತವೆ; ಸಮ pH ಇಷ್ಟ.", fertilizerAdvice: "ಕಡಿಮೆ N; P ಮತ್ತು K ಮೇಲೆ ಗಮನ.", irrigationAdvice: "ಹೂವು/ಕಾಯಿ ಭರ್ತಿಯಲ್ಲಿ ಸಣ್ಣ ಪಾಸಣೆ.", },
+    Soybean: { explanation: "ಸೊಯಾಬಿನ್ ಉತ್ತಮ ನೀರುಕಸಿತ ಮಣ್ಣಿನಲ್ಲಿ ಬೆಳೆಯುತ್ತದೆ.", fertilizerAdvice: "ಕಡಿಮೆ N, ಮಧ್ಯಮ P, K.", irrigationAdvice: "ಹೂವು/ಪಾಡ್ ಸಮಯದಲ್ಲಿ ನೀರು ಅಗತ್ಯ.", },
+    Cotton: { explanation: "ಹತ್ತಿಗೆ ಹೆಚ್ಚಿನ ಪೊಟಾಷ್ ಹಾಗೂ ನೀರಿನ ಅವಶ್ಯಕತೆ.", fertilizerAdvice: "ಬೋಲ್ ಬೆಳವಣಿಗೆಯಲ್ಲಿ K-ಸಮೃದ್ಧ ಗೊಬ್ಬರ.", irrigationAdvice: "ಹೆಚ್ಚಿನ (700–1300ಮಿಮೀ) ನೀರು ಬೇಕು.", },
+    Sugarcane: { explanation: "ಕರಿಯುಂಬು ದೀರ್ಘಾವಧಿ ಬೆಳೆ; ಹೆಚ್ಚುವರಿ ನೀರು/ಪೋಷಕಗಳು ಬೇಕು.", fertilizerAdvice: "ಸಮತೋಲನ NPK, ಸಾವಯವ ಗೊಬ್ಬರ ಸೇರಿಸಿ.", irrigationAdvice: "ನಾಲೆ ನೀರಾವರಿ ನಿಯಮಿತವಾಗಿರಲಿ.", },
+    Potato: { explanation: "ಆಲೂಗಡ್ಡೆ ತಂಪು ಹವಾಮಾನ ಮತ್ತು ನೀರುಕಸಿತ ಮಣ್ಣಿನಲ್ಲಿ ಉತ್ತಮ.", fertilizerAdvice: "ನೆಡುವಾಗ NPK, ಬಳಿಕ ಟಾಪ್ ಡ್ರೆಸಿಂಗ್.", irrigationAdvice: "ಕಂದ ನಿರ್ಮಾಣದಲ್ಲಿ ತೇವ ಇರಲಿ.", },
+    Groundnut: { explanation: "ಕಡಲೆಕಾಯಿ ಮರಳು ಲೋಮ ಮತ್ತು ಬಿಸಿ ಪರಿಸ್ಥಿತಿಯಲ್ಲಿ ಚೆನ್ನಾಗಿದೆ.", fertilizerAdvice: "ಜಿಪ್ಸಂ, ಪೊಟಾಷ್; N ಮಿತಿ.", irrigationAdvice: "ಹೂ/ಕಾಯಿ ಭರ್ತಿ ವೇಳೆ ಸಮ ತೇವ.", },
+  },
+  te: {
+    Wheat: { explanation: "గోధుమ మిత నైట్రోజన్, సమ pH లో బాగా పెరుగుతుంది.", fertilizerAdvice: "సమతుల్య NPK; విత్తన సమయంలో DAP.", irrigationAdvice: "ముఖ్య దశల్లో నీటిపారుదల ఇవ్వండి." },
+    Rice: { explanation: "బియ్యం నైట్రోజన్ సమృద్ధిగా, నీరు లభ్యమైన పరిస్థితుల్లో పుష్టిగా పెరుగుతుంది.", fertilizerAdvice: "సేంద్రీయ ఎరువులు, 4:2:1 NPK.", irrigationAdvice: "పెరుగుదలంతా 2–5సెం.మీ నీరు ఉంచండి.", },
+    Maize: { explanation: "మొక్కజొన్నకు మంచి ఫాస్ఫరస్, సమ pH అవసరం.", fertilizerAdvice: "వెజిటేటివ్ గ్రోత్‌లో అధిక నైట్రోజన్.", irrigationAdvice: "నియమిత పారుదల.", },
+    "Pulses (Lentils)": { explanation: "పప్పులు స్వయం నైట్రోజన్ స్థిరీకరిస్తాయి; తటస్థ pH ఇష్టం.", fertilizerAdvice: "తక్కువ N; P, K పై దృష్టి.", irrigationAdvice: "పుష్పించేటప్పుడు/పాడ్ ఫిల్లింగ్‌లో తక్కువ నీరు.", },
+    Soybean: { explanation: "సోయాబీన్ మంచి డ్రైనేజుతో ఉన్న మట్టిలో పెరుగుతుంది.", fertilizerAdvice: "తక్కువ N, మధ్య P, K.", irrigationAdvice: "పుష్పం/పాడ్ సమయంలో నీరు ఎంతో ముఖ్యం.", },
+    Cotton: { explanation: "పత్తికి అధిక పొటాష్, సరిపడ నీరు అవసరం.", fertilizerAdvice: "బోల్ డెవలప్మెంట్‌లో K-రిచ్ ఎరువులు.", irrigationAdvice: "అధిక (700–1300మి.మీ) నీటి అవసరం.", },
+    Sugarcane: { explanation: "చెరకు దీర్ఘకాల పంట; అధిక నీరు/పోషకాలు అవసరం.", fertilizerAdvice: "సమతుల్య NPK, సేంద్రీయ ఎరువు చేర్చండి.", irrigationAdvice: "ఫరో ఇరిగేషన్ పద్ధతిని కొనసాగించండి.", },
+    Potato: { explanation: "బంగాళాదుంప చల్లని వాతావరణం, డ్రైనేజ్ ఉన్న మట్టి ఇష్టం.", fertilizerAdvice: "నాటే సమయంలో NPK, తర్వాత టాప్ డ్రెస్సింగ్.", irrigationAdvice: "ట్యూబర్ ఏర్పడే సమయంలో తేమ ఉంచండి.", },
+    Groundnut: { explanation: "వేరుశెనగ ఇసుక లోయం, వేడి పరిస్థితుల్లో బాగుంటుంది.", fertilizerAdvice: "జిప్సం, పొటాష్; N పరిమితం.", irrigationAdvice: "పుష్పం/పాడ్ ఫిల్లింగ్‌లో సమాన తేమ.", },
+  },
+  ml:
+    { Wheat: { explanation: "ഗോതമ്പ് മിതമായ നൈട്രജനും സമതുലിത pH യിലും നന്നായി വളരും.", fertilizerAdvice: "സമതുലിത NPK; വിതയ്ക്കുമ്പോൾ DAP.", irrigationAdvice: "പ്രധാന ഘട്ടങ്ങളിൽ ജലസേചനം ചെയ്യുക." },
+      Rice: { explanation: "അരി നൈട്രജൻ സമൃദ്ധവും ജല ലാഭ്യതയുള്ള സാഹചര്യങ്ങളിലും വളരും.", fertilizerAdvice: "സൈവ വളവും 4:2:1 NPK ഉം ഉപയോഗിക്കുക.", irrigationAdvice: "വളർച്ച മുഴുവൻ 2–5 സെ.മീ വെള്ളം നിലനിർത്തുക.", },
+      Maize: { explanation: "ചോളം മികച്ച ഫോസ്ഫറസും സമ pH യും ആവശ്യമാണ്.", fertilizerAdvice: "സസ്യവളർച്ചയിൽ ഉയർന്ന നൈട്രജൻ.", irrigationAdvice: "ക്രമമായ ജലസേചനം.", },
+      "Pulses (Lentils)": { explanation: "പയർവർഗങ്ങൾ നൈട്രജൻ സ്വയം സ്ഥിരപ്പെടുത്തും; ന്യൂട്രൽ pH ഇഷ്ടം.", fertilizerAdvice: "കുറഞ്ഞ N; P, K ശ്രദ്ധിക്കുക.", irrigationAdvice: "പൂക്കൾ/കായ് നിറയ്ക്കൽ സമയത്ത് ലഘു ജലസേചനം.", },
+      Soybean: { explanation: "സോയാബീൻ നല്ല ഡ്രെയിനേജ് ഉള്ള മണ്ണിൽ വളരും.", fertilizerAdvice: "കുറഞ്ഞ N, മിതമായ P, K.", irrigationAdvice: "പൂക്കളിലും കായ് നിറയ്ക്കലിലും ജലം നിർബന്ധം.", },
+      Cotton: { explanation: "പത്തി നാരിന് ഉയർന്ന പൊട്ടാഷും മതിയായ വെള്ളവും വേണം.", fertilizerAdvice: "ബോൾ വികസനത്തിൽ K-സമൃദ്ധമായ വളം.", irrigationAdvice: "ഉയർന്ന (700–1300മിമീ) ജലാവശ്യകത.", },
+      Sugarcane: { explanation: "കരിമ്പ് ദീർഘകാല വിള; കൂടുതലുള്ള ജല/പോഷക ആവശ്യം.", fertilizerAdvice: "സമതുലിത NPK, ജൈവവളം ചേർക്കുക.", irrigationAdvice: "കുഴിവയൽ ജലസേചനം തുടരുക.", },
+      Potato: { explanation: "ഉരുളകിഴങ്ങ് തണുത്ത കാലാവസ്ഥയും ഡ്രെയിനേജ് ഉള്ള മണ്ണും ഇഷ്ടം.", fertilizerAdvice: "നട്ട് സമയത്ത് NPK, പിന്നീട് ടോപ് ഡ്രസ്സിംഗ്.", irrigationAdvice: "കന്ധങ്ങൾ രൂപപ്പെടുമ്പോൾ ഈർപ്പം കൈവശം വയ്ക്കുക.", },
+      Groundnut: { explanation: "വേർകടല മണൽ-ലോം മണ്ണിലും ചൂടിലും മികച്ചത്.", fertilizerAdvice: "ജിപ്സം, പൊട്ടാഷ്; N നിയന്ത്രിക്കുക.", irrigationAdvice: "പൂ/പോഡ് നിറയ്ക്കലിൽ തുല്യ ഈർപ്പം.", },
+    },
+};
+
+// Helper to translate a crop's text fields with fallback to originals
+function translateCropContent(
+  lang: keyof typeof cropNameTranslations,
+  name: string,
+  fields: { explanation: string; fertilizerAdvice: string; irrigationAdvice: string }
+) {
+  const m = cropContentTranslations[lang]?.[name];
+  return {
+    explanation: m?.explanation ?? fields.explanation,
+    fertilizerAdvice: m?.fertilizerAdvice ?? fields.fertilizerAdvice,
+    irrigationAdvice: m?.irrigationAdvice ?? fields.irrigationAdvice,
+  };
+}
+
 export default function Dashboard() {
   const { isAuthenticated } = useAuth();
   type Language = "en" | "hi" | "ta" | "bn" | "ur" | "kn" | "te" | "ml";
@@ -404,11 +582,11 @@ export default function Dashboard() {
       chat: "ಚಾಟ್",
       contacts: "ಸಂಪರ್ಕಗಳು",
       enterMessage: "ಸಂದೇಶವನ್ನು ಬರೆಯಿರಿ...",
-      shareContact: "ಸಂಪರ್ಕಾನ್ನಿ പങ്കിടുക",
+      shareContact: "ಸಂಪರ್ಕಾನ್ನಿ പങ്കಿಟುಕ",
       name: "ಹೆಸರು",
       phone: "ಫೋನ್",
       note: "ಗಮನಿಕ (ಐಚ್ಛಿಕಂ)",
-      post: "പോസ്റ്റ്",
+      post: "Post",
       save: "ಉಳಿಸಿ",
       stateRoom: "ರಾಜ್ಯ ಕೊಠಡಿ",
     },
@@ -945,6 +1123,9 @@ export default function Dashboard() {
               userRecommendations={userRecommendations}
               speakText={speakText}
               translateName={(name) => translateCropName(language, name)}
+              translateFields={(name, fields) =>
+                translateCropContent(language, name, fields)
+              }
             />
           </motion.div>
         )}
