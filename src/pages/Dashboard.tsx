@@ -22,7 +22,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+/* removed unused Tabs imports */
 import WeatherCard from "./dashboard/WeatherCard";
 import MarketPricesCard from "./dashboard/MarketPricesCard";
 import RecommendationsList from "./dashboard/RecommendationsList";
